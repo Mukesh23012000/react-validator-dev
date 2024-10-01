@@ -1,6 +1,6 @@
 {
   "name": "react-validator-dev",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Real-time error messaging and supports field dependencies React hook for form validation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "prepublishOnly": "npm run build"
   },
   "author": "Mukesh Kannan",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0"
