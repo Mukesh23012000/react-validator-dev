@@ -35,7 +35,7 @@ const useValidation = (data) => {
             const value = fields[field];
             let error = '';
             const rules = validation.rules[field];
-            const messages = validation.messages[field];
+            const messages = validation === null || validation === void 0 ? void 0 : validation.messages[field];
             if (rules === null || rules === void 0 ? void 0 : rules.isRequired) {
                 error = isRequiredCheck(value, (messages === null || messages === void 0 ? void 0 : messages.isRequired) || `Please enter the ${field}`);
             }
