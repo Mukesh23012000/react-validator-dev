@@ -75,9 +75,11 @@ const useValidation = (data) => {
             }
             newErrors[field] = error;
         });
-        const status = Object.values(newErrors).every((error) => !error);
-        setErrors({ errors: newErrors, status });
-    }, [fields, validation]);
+        if (JSON.stringify(errors.errors) !== JSON.stringify(newErrors)) {
+            const status = Object.values(newErrors).every((error) => !error);
+            setErrors({ errors: newErrors, status });
+        }
+    }, [fields, validation, errors]);
     return [errors];
 };
 exports.default = useValidation;

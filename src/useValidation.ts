@@ -85,7 +85,8 @@ const sameAsFieldCheck = (data: string, errorMessage: string, fieldValue: string
 
 const useValidation = (data: { fields: Record<string, any>; validation: Validation }) => {
     const [errors, setErrors] = useState<ValidationErrors>({ errors: {}, status: true });
-    const { fields, validation } = data;
+    
+    const {fields,validation} = data;
 
     useEffect(() => {
         const newErrors: Record<string, string> = {};
@@ -138,9 +139,11 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
             newErrors[field] = error;
         });
 
-        const status = Object.values(newErrors).every((error) => !error);
-        setErrors({ errors: newErrors, status });
-    }, [fields, validation]);
+        if (JSON.stringify(errors.errors) !== JSON.stringify(newErrors)) {
+            const status = Object.values(newErrors).every((error) => !error);
+            setErrors({ errors: newErrors, status });
+        }
+    }, [fields, validation,errors]);
 
     return [errors];
 };
