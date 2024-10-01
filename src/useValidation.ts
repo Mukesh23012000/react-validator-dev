@@ -32,7 +32,7 @@ interface ErrorMessage {
 
 interface Validation {
     rules: { [key: string]: ValidationRule };
-    messages: { [key: string]: ErrorMessage };
+    messages?: { [key: string]: ErrorMessage };
 }
 
 interface ValidationErrors {
@@ -96,7 +96,7 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
             let error = '';
 
             const rules = validation.rules[field];
-            const messages = validation?.messages[field];
+            const messages = validation?.messages?.[field];
 
             if (rules?.isRequired) {
                 error = isRequiredCheck(value, messages?.isRequired || `Please enter the ${field}`);

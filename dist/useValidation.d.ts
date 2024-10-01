@@ -30,7 +30,7 @@ interface Validation {
     rules: {
         [key: string]: ValidationRule;
     };
-    messages: {
+    messages?: {
         [key: string]: ErrorMessage;
     };
 }

@@ -32,10 +32,11 @@ const useValidation = (data) => {
     (0, react_1.useEffect)(() => {
         const newErrors = {};
         Object.keys(fields).forEach((field) => {
+            var _a;
             const value = fields[field];
             let error = '';
             const rules = validation.rules[field];
-            const messages = validation === null || validation === void 0 ? void 0 : validation.messages[field];
+            const messages = (_a = validation === null || validation === void 0 ? void 0 : validation.messages) === null || _a === void 0 ? void 0 : _a[field];
             if (rules === null || rules === void 0 ? void 0 : rules.isRequired) {
                 error = isRequiredCheck(value, (messages === null || messages === void 0 ? void 0 : messages.isRequired) || `Please enter the ${field}`);
             }
