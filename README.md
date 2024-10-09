@@ -27,36 +27,64 @@ The `useValidation` hook provides a customizable validation solution for React f
 ## Example:
 
 ```javascript
-const { fields, validation } = {
-  fields: { username: '', email: '' },
-  validation: {
-    rules: {
-      username: { isRequired: true, maxLength: 15 },
-      email: { isRequired: true, email: true },
-    },
-    messages: {
-      username: {
-        isRequired: 'Username is required.',
-        maxLength: 'Username must be at most 15 characters.',
-      },
-      email: {
-        isRequired: 'Email is required.',
-        email: 'Please enter a valid email address.',
-      },
-    },
-  },
-};
+import { useState } from 'react';
+import { useValidation } from 'react-validator-dev';
 
-const [{errors,status}] = useValidation({ fields, validation });
+function App() {
 
-const handleSubmit = (e) => {
-    e.preventDefault();
-    if (errors.status) {
-        console.log("Form submitted successfully!", fields);
-    } else {
-        console.log("There are validation errors:", errors.errors);
+  const [fields,setFields] = useState({
+    name:"",
+    email:""
+  });
+
+  const validation = {
+    rules :{
+      name : {
+        isRequired: true
+      },
+      email : {
+        isRequired: true,
+        email : true
+      }
+    },
+    messages :{
+      name : {
+        isRequired : 'Whoops! Please tell us your name!'
+      },
+      email : {
+        isRequired : 'Oops! We need your email to keep the fun going!',
+        email: 'Oops! That email looks a bit wonky. Can you try a valid one?'
+      }
     }
-};
+  }
+  const [error] = useValidation({fields,validation})
+
+  const handleSubmit = (event) => {
+      event.preventDefault()
+      if(error.status === true){
+        submitUserDetails(fields)
+      }
+  }
+
+  return (
+    <div className="App">
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Name</label>
+          <input type='text' name="name" value={fields.name}  onChange={(e)=>setFields({...fields,name: e.target.value})}/>
+          <span style={{color:'red'}}> {error.errors?.name} </span>
+        </div>
+        <div>
+          <label>Email</label>
+          <input type='text' name="email" value={fields.email}  onChange={(e)=>setFields({...fields,email: e.target.value})} />
+          <span style={{color:'red'}}> {error.errors?.email} </span>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default App;
 ```
 
 
