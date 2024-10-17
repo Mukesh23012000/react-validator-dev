@@ -83,6 +83,7 @@ function App() {
           <input type='text' name="email" value={fields.email}  onChange={(e)=>setFields({...fields,email: e.target.value})} />
           <span style={{color:'red'}}> {error.errors?.email} </span>
         </div>
+        <button type='submit'>Submit</button>
       </form>
     </div>
   );

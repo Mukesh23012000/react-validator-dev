@@ -83,18 +83,16 @@ const alphaWithSpaceCheck = (data: string, errorMessage: string) => {
 const sameAsFieldCheck = (data: string, errorMessage: string, fieldValue: string) => 
     data === fieldValue ? '' : errorMessage;
 
-const useValidation = (data: { fields: Record<string, any>; validation: Validation }, submitted :boolean, debounceDelay = 300) => {
+const useValidation = (data: { fields: Record<string, any>; validation: Validation }, submitted :boolean = true, debounceDelay = 300) => {
     const [errors, setErrors] = useState<ValidationErrors>({ errors: {}, status: true });
 
     const { fields, validation } = data;
     const [fieldsInitailStaus,setFieldsInitailStaus] = useState<any>();
-    const [isSubmitted,setIsSubmitted] = useState<boolean>();
 
     useEffect(()=>{
         let status = {...fields};
         Object.keys(fields).forEach((field)=> status[field] = false);
         setFieldsInitailStaus(status)
-        setIsSubmitted(submitted)
     },[])
 
     useEffect(() => {
@@ -148,7 +146,7 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
                 if(!error.length){
                     setFieldsInitailStaus({...fieldsInitailStaus,[field]:true})
                 }
-                if(fieldsInitailStaus[field] == true || isSubmitted == true){
+                if(fieldsInitailStaus[field] == true || submitted == true){
                     newErrors[field] = error;
                 } 
             });
@@ -162,7 +160,7 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
         return () => {
             clearTimeout(handler);
         };
-    }, [fields, validation, debounceDelay]);
+    }, [fields, validation, debounceDelay, submitted]);
 
     return [errors];
 };
