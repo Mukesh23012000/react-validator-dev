@@ -16,13 +16,14 @@ The `useValidation` hook provides a customizable validation solution for React f
 - **Custom Error Messages:** Allows for personalized error messages for each validation rule, making it easy to inform users of specific input issues.
 - **Dynamic Validation:** Automatically validates fields whenever their values change, providing real-time feedback.
 - **Field Dependency Checks:** Supports rules that require values to match another field, useful for confirmations like passwords.
+-**Debouncing:** Reduces the frequency of validation checks during rapid input, enhancing performance and user experience.
 
 ## Usage:
 
 1. Define your validation rules and messages.
-2. Pass your form data and validation configuration to the `useValidation` hook.
+2. Pass your form data, validation configuration, and the submitted form status to the useValidation hook.
 3. Access the error messages and validation status to manage form submission and display feedback.
-
+5. Optionally, specify a debounce delay (in milliseconds) to control the timing of validation checks.
 
 ## Example:
 
@@ -36,6 +37,8 @@ function App() {
     name:"",
     email:""
   });
+
+  const [formSubmitStatus,setFormSubmitStatus] = useState(false)
 
   const validation = {
     rules :{
@@ -60,6 +63,7 @@ function App() {
   const [error] = useValidation({fields,validation})
 
   const handleSubmit = (event) => {
+      setFormSubmitStatus(true)
       event.preventDefault()
       if(error.status === true){
         submitUserDetails(fields)

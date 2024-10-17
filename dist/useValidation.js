@@ -26,14 +26,16 @@ const alphaWithSpaceCheck = (data, errorMessage) => {
     return regex.test(data) ? '' : errorMessage;
 };
 const sameAsFieldCheck = (data, errorMessage, fieldValue) => data === fieldValue ? '' : errorMessage;
-const useValidation = (data, debounceDelay = 300) => {
+const useValidation = (data, submitted, debounceDelay = 300) => {
     const [errors, setErrors] = (0, react_1.useState)({ errors: {}, status: true });
     const { fields, validation } = data;
     const [fieldsInitailStaus, setFieldsInitailStaus] = (0, react_1.useState)();
+    const [isSubmitted, setIsSubmitted] = (0, react_1.useState)();
     (0, react_1.useEffect)(() => {
         let status = Object.assign({}, fields);
         Object.keys(fields).forEach((field) => status[field] = false);
         setFieldsInitailStaus(status);
+        setIsSubmitted(submitted);
     }, []);
     (0, react_1.useEffect)(() => {
         const handler = setTimeout(() => {
@@ -84,7 +86,7 @@ const useValidation = (data, debounceDelay = 300) => {
                 if (!error.length) {
                     setFieldsInitailStaus(Object.assign(Object.assign({}, fieldsInitailStaus), { [field]: true }));
                 }
-                if (fieldsInitailStaus[field] == true) {
+                if (fieldsInitailStaus[field] == true || isSubmitted == true) {
                     newErrors[field] = error;
                 }
             });
