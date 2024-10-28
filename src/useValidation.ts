@@ -83,7 +83,7 @@ const alphaWithSpaceCheck = (data: string, errorMessage: string) => {
 const sameAsFieldCheck = (data: string, errorMessage: string, fieldValue: string) => 
     data === fieldValue ? '' : errorMessage;
 
-const useValidation = (data: { fields: Record<string, any>; validation: Validation }, submitted :boolean = true, debounceDelay = 300) => {
+const useValidation = (data: { fields: Record<string, any>; validation: Validation }, isMultiple = false, submitted :boolean = true, debounceDelay = 300) => {
     const [errors, setErrors] = useState<ValidationErrors>({ errors: {}, status: true });
 
     const { fields, validation } = data;
@@ -97,57 +97,70 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
 
     useEffect(() => {
         const handler = setTimeout(() => {
-            const newErrors: Record<string, string> = {};
-
+            const newErrors: Record<string, string> |  any  = {};
+            const multipleMessages: string[]  = [];
             Object.keys(fields).forEach((field) => {
                 const value = fields[field];
                 let error = '';
 
                 const rules = validation.rules[field];
                 const messages = validation?.messages?.[field];
+                
 
                 if (rules?.isRequired) {
                     error = isRequiredCheck(value, messages?.isRequired || `Please enter the ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.maxLength !== undefined) {
                     error = maxLengthCheck(value, rules.maxLength, messages?.maxLength || `The ${field} length should be at most ${rules.maxLength}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.minLength !== undefined) {
                     error = minLengthCheck(value, rules.minLength, messages?.minLength || `The ${field} length should be at least ${rules.minLength}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.excludedCharacters) {
                     error = excludedCharactersCheck(value, rules.excludedCharacters, messages?.excludedCharacters || `Please enter valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.regex) {
                     error = regexCheck(value, rules.regex, messages?.regex || `The ${field} format is invalid`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.alpha) {
                     error = alphaCheck(value, messages?.alpha || `Please enter valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.email) {
                     error = emailCheck(value, messages?.email || `Please enter a valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.numeric) {
                     error = numericCheck(value, messages?.numeric || `Please enter a valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.date) {
                     error = isDateCheck(value, messages?.date || `Please enter a valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.alphaDash) {
                     error = alphaWithDashCheck(value, messages?.alphaDash || `Please enter valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.alphaSpace) {
                     error = alphaWithSpaceCheck(value, messages?.alphaSpace || `Please enter valid ${field}`);
+                    error?.length && multipleMessages.push(error);
                 }
                 if (!error && rules?.sameAsField) {
                     const otherFieldValue = fields[rules.sameAsField];
                     error = sameAsFieldCheck(value, messages?.sameAsField || `Please ensure ${field} matches ${rules.sameAsField}`, otherFieldValue);
+                    error?.length && multipleMessages.push(error);
                 }
                 if(!error.length){
                     setFieldsInitailStaus({...fieldsInitailStaus,[field]:true})
                 }
                 if(fieldsInitailStaus[field] == true || submitted == true){
-                    newErrors[field] = error;
+                    newErrors[field] = !isMultiple ? error : multipleMessages;
                 } 
             });
 

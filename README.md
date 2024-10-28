@@ -18,6 +18,15 @@ The `useValidation` hook provides a customizable validation solution for React f
 - **Field Dependency Checks:** Supports rules that require values to match another field, useful for confirmations like passwords.
 -**Debouncing:** Reduces the frequency of validation checks during rapid input, enhancing performance and user experience.
 
+## Parameters:
+  1. **fields:**  An object representing the current values of your form fields. The keys of this object should match the field names defined in your validation rules. This parameter is crucial as it allows the validation hook to assess the current state of each field.
+  2. **validation:** An object that defines the validation rules and corresponding error messages for each field in your form. This object should contain two properties:
+      - ***rules:*** An object where each key corresponds to a field name, and the value is an object specifying the validation rules for that field.
+      - ***messages (optional):*** An object containing custom error messages for each field and validation rule. If not provided, default messages will be used.
+  3. **isMultiple (optional):** When set to true, this parameter enables the hook to return an    array of error messages for each field instead of a single error string. This is useful for scenarios where multiple validation rules can fail simultaneously for a single field. The default value is false.
+  4. **submitted (optional):** Indicates whether the form has been submitted. This can trigger validation checks when the form is submitted. If set to true, the hook will validate all fields even if they have not changed. This is helpful for ensuring all fields are validated before final submission.
+  5.**debounceDelay (optional):** Specifies the delay (in milliseconds) for the debounce functionality. This helps reduce the frequency of validation checks while the user is typing. The default value is 300 milliseconds, but this can be adjusted based on the needs of your application
+
 ## Usage:
 
 1. Define your validation rules and messages.
@@ -91,7 +100,82 @@ function App() {
 
 export default App;
 ```
+## Example with multiple errors for same field:
+```javascript 
+import { useState } from 'react';
+import { useValidation } from 'react-validator-dev';
 
+function MyForm() {
+    const [fields, setFields] = useState({
+        username: '',
+        password: '',
+    });
+
+    const validation = {
+        rules: {
+            username: {
+                isRequired: true,
+                maxLength: 10,
+                excludedCharacters: ['@', '#'],
+            },
+            password: {
+                isRequired: true,
+                minLength: 6,
+                maxLength: 12,
+            },
+        },
+        messages: {
+            username: {
+                isRequired: 'Username is required.',
+                maxLength: 'Username must be 10 characters or less.',
+                excludedCharacters: 'Username cannot contain @ or #.',
+            },
+            password: {
+                isRequired: 'Password is required.',
+                minLength: 'Password must be at least 6 characters long.',
+                maxLength: 'Password cannot exceed 12 characters.',
+            },
+        },
+    };
+
+    const [error] = useValidation({ fields, validation }, true); // Set isMultiple to true
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        if (error.status) {
+            submitUserData(fields);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <div>
+                <label>Username:</label>
+                <input type="text" name="username" value={fields.username} onChange={(e) => setFields({ ...fields, username: e.target.value })} />
+                {error.errors?.username && (
+                    <ul>
+                        {error.errors.username.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <div>
+                <label>Password:</label>
+                <input type="password" name="password" value={fields.password} onChange={(e) => setFields({ ...fields, password: e.target.value })} />
+                {error.errors?.password && (
+                    <ul>
+                        {error.errors.password.map((msg, index) => (
+                            <li key={index}>{msg}</li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    );
+}
+```
 
 ## Return Value:
 
