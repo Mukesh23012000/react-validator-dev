@@ -26,14 +26,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Example of `Field` component
 const react_1 = __importStar(require("react"));
 const DevForm_1 = require("./DevForm");
-const Field = ({ as = 'input', id, name, placeHolder, children }) => {
+const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className = "", style = {}, children }) => {
+    const debounceDelay = 300;
     const [fieldType, setFieldType] = (0, react_1.useState)(as);
     const [value, setValue] = (0, react_1.useState)('');
     const { fields, updateFields } = (0, react_1.useContext)(DevForm_1.FieldContext);
     (0, react_1.useEffect)(() => {
-        if (fields && name in fields) {
-            setValue(fields[name]);
-        }
+        const handler = setTimeout(() => {
+            if (fields && name in fields) {
+                setValue(fields[name]);
+            }
+        }, debounceDelay);
+        return () => {
+            clearTimeout(handler);
+        };
     }, [fields]);
     (0, react_1.useEffect)(() => {
         updateFields({ key: name, value });
@@ -43,13 +49,13 @@ const Field = ({ as = 'input', id, name, placeHolder, children }) => {
     };
     switch (fieldType) {
         case 'input':
-            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onChange: handleChange });
+            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onChange: handleChange, className: className });
         case 'textarea':
-            return (react_1.default.createElement("textarea", { id: id, name: name, placeholder: placeHolder, value: value, onChange: handleChange }, children));
+            return (react_1.default.createElement("textarea", { id: id, name: name, placeholder: placeHolder, value: value, onChange: handleChange, className: className }, children));
         case 'select':
-            return (react_1.default.createElement("select", { id: id, name: name, value: value, onChange: handleChange }, children));
+            return (react_1.default.createElement("select", { id: id, name: name, value: value, onChange: handleChange, className: className }, children));
         default:
-            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onChange: handleChange });
+            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onChange: handleChange, className: className });
     }
 };
 exports.default = Field;
