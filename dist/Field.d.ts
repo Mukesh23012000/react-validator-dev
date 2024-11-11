@@ -11,6 +11,8 @@ interface Props {
     children?: React.ReactNode;
     className?: string;
     style?: Style;
+    change?: (value: string | number) => void;
+    input?: (value: string | number) => void;
 }
 declare const Field: React.FC<Props>;
 export default Field;

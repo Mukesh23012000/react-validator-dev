@@ -36,6 +36,7 @@ const DevForm = ({ initialValues, children, changeField, submit }) => {
         changeField(fields);
     }, [fields]);
     const handleSubmit = (e) => {
+        e.preventDefault();
         if (submit) {
             submit(fields);
         }
