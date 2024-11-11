@@ -15,11 +15,12 @@ interface Props {
     children?: React.ReactNode;
     className? : string;
     style? : Style;
+    type?: string;
     change? : (value:string | number) => void;
     input? : (value:string | number) => void;
 }
 
-const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",className = "", style={}, change, input, children }) => {
+const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",className = "", type="", style={}, change, input, children }) => {
     const debounceDelay = 300;
     const [fieldType, setFieldType] = useState<FieldType>(as);
     const [value, setValue] = useState<string | number>('');
@@ -56,7 +57,7 @@ const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",c
 
     switch (fieldType) {
         case 'input':
-            return <input id={id} name={name} placeholder={placeHolder} value={value} onInput={(e)=> handleInput} onChange={handleChange} style={style} className={className} />;
+            return <input id={id} name={name} placeholder={placeHolder} value={value} onInput={(e)=> handleInput} onChange={handleChange} style={style} className={className} type={type} />;
         case 'textarea':
             return (
                 <textarea id={id} name={name} placeholder={placeHolder} value={value} onInput={(e)=> handleInput}  onChange={handleChange} style={style} className={className} >
@@ -65,12 +66,12 @@ const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",c
             );
         case 'select':
             return (
-                <select id={id} name={name} value={value} onInput={(e)=> handleInput}  onChange={handleChange} style={style} className={className}>
+                <select id={id} name={name} value={value} onInput={(e)=> handleInput}  onChange={handleChange} style={style} className={className} >
                     {children}
                 </select>
             );
         default:
-            return <input id={id} name={name} placeholder={placeHolder} value={value} onInput={(e)=> handleInput}  onChange={handleChange} style={style} className={className}  />;
+            return <input id={id} name={name} placeholder={placeHolder} value={value} onInput={(e)=> handleInput}  onChange={handleChange} style={style} className={className} type={type}  />;
     }
 };
 
