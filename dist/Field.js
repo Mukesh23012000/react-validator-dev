@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Example of `Field` component
 const react_1 = __importStar(require("react"));
 const DevForm_1 = require("./DevForm");
-const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className = "", style = {}, change, input, children }) => {
+const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className = "", type = "", style = {}, change, input, children }) => {
     const debounceDelay = 300;
     const [fieldType, setFieldType] = (0, react_1.useState)(as);
     const [value, setValue] = (0, react_1.useState)('');
@@ -57,13 +57,13 @@ const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className =
     };
     switch (fieldType) {
         case 'input':
-            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className });
+            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, type: type });
         case 'textarea':
             return (react_1.default.createElement("textarea", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className }, children));
         case 'select':
             return (react_1.default.createElement("select", { id: id, name: name, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className }, children));
         default:
-            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className });
+            return react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, type: type });
     }
 };
 exports.default = Field;

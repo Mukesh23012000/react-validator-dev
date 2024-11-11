@@ -11,6 +11,7 @@ interface Props {
     children?: React.ReactNode;
     className?: string;
     style?: Style;
+    type?: string;
     change?: (value: string | number) => void;
     input?: (value: string | number) => void;
 }
