@@ -29,17 +29,15 @@ const DevForm_1 = require("./DevForm");
 const Field = ({ as = 'input', id, name, placeHolder, children }) => {
     const [fieldType, setFieldType] = (0, react_1.useState)(as);
     const [value, setValue] = (0, react_1.useState)('');
-    const { fields, updateFields } = (0, react_1.useContext)(DevForm_1.FieldContext) || {};
+    const { fields, updateFields } = (0, react_1.useContext)(DevForm_1.FieldContext);
     (0, react_1.useEffect)(() => {
         if (fields && name in fields) {
             setValue(fields[name]);
         }
-    }, [fields, name]);
+    }, [fields]);
     (0, react_1.useEffect)(() => {
-        if (name) {
-            updateFields && updateFields({ key: name, value });
-        }
-    }, [value, name, updateFields]);
+        updateFields({ key: name, value });
+    }, [value]);
     const handleChange = (e) => {
         setValue(e.target.value);
     };

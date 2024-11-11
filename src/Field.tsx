@@ -15,19 +15,17 @@ interface Props {
 const Field: React.FC<Props> = ({ as = 'input', id, name, placeHolder, children }) => {
   const [fieldType, setFieldType] = useState<FieldType>(as);
   const [value, setValue] = useState<string | number>('');
-  const { fields, updateFields } = useContext(FieldContext) || {};
+  const { fields, updateFields } = useContext<any>(FieldContext);
 
   useEffect(() => {
     if (fields && name in fields) {
       setValue(fields[name]);
     }
-  }, [fields, name]);
+  }, [fields]);
 
   useEffect(() => {
-    if (name) {
-      updateFields && updateFields({ key: name, value });
-    }
-  }, [value, name, updateFields]);
+    updateFields({ key: name, value });
+  }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setValue(e.target.value);
