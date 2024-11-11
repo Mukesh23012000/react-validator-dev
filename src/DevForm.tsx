@@ -41,10 +41,12 @@ const DevForm: React.FC<DevFormProps> = ({ initialValues, children, changeField 
   }, [fields]);
 
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (submit) {
         submit(fields);
       }
   }
+  
   return (
     <FieldContext.Provider value={{ fields, updateFields }}>
         <form onSubmit={handleSubmit}>
