@@ -181,9 +181,9 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
     }, [fields, validation, debounceDelay, submitted]);
 
     useEffect(()=>{
-        setsubmitted(true)
+        validateAll && setsubmitted(true)
     },[validateAll])
-    
+
     return [errors];
 };
 

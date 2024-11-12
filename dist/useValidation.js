@@ -116,7 +116,7 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
         };
     }, [fields, validation, debounceDelay, submitted]);
     (0, react_1.useEffect)(() => {
-        setsubmitted(true);
+        validateAll && setsubmitted(true);
     }, [validateAll]);
     return [errors];
 };
