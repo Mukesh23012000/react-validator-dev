@@ -99,8 +99,8 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
 
     const validateC = () => {
         const newErrors: Record<string, string> |  any  = {};
-        const multipleMessages: string[]  = [];
         Object.keys(fields).forEach((field) => {
+            const multipleMessages: string[]  = [];
             const value = fields[field];
             let error = '';
 
@@ -170,6 +170,7 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
             setErrors({ errors: newErrors, status });
         }
     }
+
     useEffect(() => {
         const handler = setTimeout(() => {
             validateC()

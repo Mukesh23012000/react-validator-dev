@@ -39,9 +39,9 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
     }, []);
     const validateC = () => {
         const newErrors = {};
-        const multipleMessages = [];
         Object.keys(fields).forEach((field) => {
             var _a;
+            const multipleMessages = [];
             const value = fields[field];
             let error = '';
             const rules = validation.rules[field];

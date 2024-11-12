@@ -12,8 +12,11 @@ interface Props {
     className?: string;
     style?: Style;
     type?: string;
-    change?: (value: string | number) => void | "";
-    input?: (value: string | number) => void | "";
+    change?: (value: string | number) => void;
+    input?: (value: string | number) => void;
+    click?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    focus?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    blur?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 declare const Field: React.FC<Props>;
 export default Field;
