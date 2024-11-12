@@ -41,5 +41,5 @@ interface ValidationErrors {
 declare const useValidation: (data: {
     fields: Record<string, any>;
     validation: Validation;
-}, isMultiple?: boolean, submitted?: boolean, debounceDelay?: number) => ValidationErrors[];
+}, isMultiple?: boolean, submit?: boolean, debounceDelay?: number, validateAll?: boolean) => ValidationErrors[];
 export default useValidation;
