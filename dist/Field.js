@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Example of `Field` component
 const react_1 = __importStar(require("react"));
 const DevForm_1 = require("./DevForm");
-const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className = "", type = "", style = {}, change, input, children }) => {
+const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className = "", type = "", style = {}, change = "", input = "", children }) => {
     const debounceDelay = 300;
     const [fieldType, setFieldType] = (0, react_1.useState)(as);
     const [value, setValue] = (0, react_1.useState)('');
@@ -46,12 +46,12 @@ const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className =
     }, [value]);
     const handleChange = (e) => {
         setValue(e.target.value);
-        if (change) {
+        if (typeof change === "function") {
             change(e.target.value);
         }
     };
     const handleInput = (e) => {
-        if (input) {
+        if (typeof input === "function") {
             input(e.target.value);
         }
     };

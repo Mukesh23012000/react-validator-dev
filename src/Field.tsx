@@ -16,11 +16,11 @@ interface Props {
     className? : string;
     style? : Style;
     type?: string;
-    change? : (value:string | number) => void;
-    input? : (value:string | number) => void;
+    change? : (value:string | number) => void | "";
+    input? : (value:string | number) => void | "";
 }
 
-const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",className = "", type="", style={}, change, input, children }) => {
+const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",className = "", type="", style={}, change = "", input = "", children }) => {
     const debounceDelay = 300;
     const [fieldType, setFieldType] = useState<FieldType>(as);
     const [value, setValue] = useState<string | number>('');
@@ -44,13 +44,13 @@ const Field: React.FC<Props> = ({ as = 'input', id="", name="", placeHolder="",c
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setValue(e.target.value);
-        if(change){
+        if(typeof change === "function" ){
             change(e.target.value);
         }
     };
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        if(input){
+        if(typeof input === "function" ){
             input(e.target.value);
         }
     };
