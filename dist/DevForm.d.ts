@@ -3,9 +3,9 @@ type InitialValues = {
     [key: string]: string | number;
 };
 interface DevFormProps {
-    initialValues: InitialValues;
+    initialValues?: InitialValues;
     children: ReactNode;
-    changeField: (fields: Fields) => void;
+    changeField?: (fields: Fields) => void;
     submit?: (fields: Fields) => void;
 }
 interface Fields {

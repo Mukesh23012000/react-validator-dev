@@ -26,14 +26,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FieldContext = void 0;
 const react_1 = __importStar(require("react"));
 exports.FieldContext = (0, react_1.createContext)(undefined);
-const DevForm = ({ initialValues, children, changeField, submit }) => {
+const DevForm = ({ initialValues = {}, children, changeField, submit }) => {
     const [fields, setFields] = (0, react_1.useState)(initialValues);
     const updateFields = (newValue) => {
         const { key, value } = newValue;
         setFields((prevFields) => (Object.assign(Object.assign({}, prevFields), { [key]: value })));
     };
     (0, react_1.useEffect)(() => {
-        changeField(fields);
+        if (changeField) {
+            changeField(fields);
+        }
     }, [fields]);
     const handleSubmit = (e) => {
         e.preventDefault();
