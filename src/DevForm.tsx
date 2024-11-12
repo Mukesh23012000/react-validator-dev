@@ -5,9 +5,9 @@ type InitialValues = {
 };
 
 interface DevFormProps {
-  initialValues: InitialValues;
+  initialValues?: InitialValues;
   children: ReactNode;
-  changeField: (fields: Fields) => void;
+  changeField?: (fields: Fields) => void;
   submit? : (fields: Fields) => void;
 }
 
@@ -27,7 +27,7 @@ interface FieldContextType {
 
 export const FieldContext = createContext<FieldContextType | undefined>(undefined);
 
-const DevForm: React.FC<DevFormProps> = ({ initialValues, children, changeField , submit }) => {
+const DevForm: React.FC<DevFormProps> = ({ initialValues={}, children, changeField , submit }) => {
 
   const [fields, setFields] = useState<Fields>(initialValues);
 
@@ -37,7 +37,9 @@ const DevForm: React.FC<DevFormProps> = ({ initialValues, children, changeField 
   };
 
   useEffect(() => {
-    changeField(fields)
+    if (changeField) {
+      changeField(fields)
+    }
   }, [fields]);
 
   const handleSubmit = (e: React.FormEvent) => {
