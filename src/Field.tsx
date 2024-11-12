@@ -52,11 +52,11 @@ const Field: React.FC<Props> = ({
         return () => {
             clearTimeout(handler);
         };
-    }, [fields, name, value]);
+    }, [fields]);
 
     useEffect(() => {
         updateFields({ key: name, value });
-    }, [value, name, updateFields]);
+    }, [value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const newValue = e.target.value;

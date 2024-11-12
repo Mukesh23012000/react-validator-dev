@@ -39,10 +39,10 @@ const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className =
         return () => {
             clearTimeout(handler);
         };
-    }, [fields, name, value]);
+    }, [fields]);
     (0, react_1.useEffect)(() => {
         updateFields({ key: name, value });
-    }, [value, name, updateFields]);
+    }, [value]);
     const handleChange = (e) => {
         const newValue = e.target.value;
         setValue(newValue);
