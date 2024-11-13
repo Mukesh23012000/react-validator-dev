@@ -17,6 +17,10 @@ interface Props {
     click?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     focus?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     blur?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    error?: string | string[];
+    errorClassName?: string;
+    errorStyle?: Style;
+    validate?: boolean;
 }
 declare const Field: React.FC<Props>;
 export default Field;

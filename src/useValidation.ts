@@ -5,7 +5,7 @@ interface ValidationRule {
     maxLength?: number;
     minLength?: number;
     excludedCharacters?: string[];
-    regex?: string;
+    regex?: string | any;
     alpha?: boolean;
     email?: boolean;
     numeric?: boolean;

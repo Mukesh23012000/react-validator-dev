@@ -20,6 +20,10 @@ interface Props {
     click?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     focus?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
     blur?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    error?: string | string[];
+    errorClassName?: string;
+    errorStyle?: Style
+    validate? : boolean;
 }
 
 const Field: React.FC<Props> = ({
@@ -35,12 +39,17 @@ const Field: React.FC<Props> = ({
     click = "",
     focus = "",
     blur = "",
+    error = "",
+    errorClassName = "",
+    errorStyle = { color: 'red' },
+    validate = false,
     children
 }) => {
     const debounceDelay = 300;
     const [fieldType, setFieldType] = useState<FieldType>(as);
     const [value, setValue] = useState<string | number>('');
     const { fields, updateFields } = useContext<any>(FieldContext);
+    const [showError,setShowError] = useState<boolean>(false);
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -57,6 +66,10 @@ const Field: React.FC<Props> = ({
     useEffect(() => {
         updateFields({ key: name, value });
     }, [value]);
+
+    useEffect(()=>{
+        setShowError(validate)
+    },[validate])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const newValue = e.target.value;
@@ -83,6 +96,7 @@ const Field: React.FC<Props> = ({
         }
     };
     const handleBlur = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setShowError(true);
         if (typeof blur === 'function') {
             blur(e);
         }
@@ -91,72 +105,84 @@ const Field: React.FC<Props> = ({
     switch (fieldType) {
         case 'input':
             return (
-                <input
-                    id={id}
-                    name={name}
-                    placeholder={placeHolder}
-                    value={value}
-                    onInput={(e)=>handleInput}
-                    onChange={handleChange}
-                    style={style}
-                    className={className}
-                    type={type}
-                    onClick={(e)=>handleClick}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                />
+                <>
+                    <input
+                        id={id}
+                        name={name}
+                        placeholder={placeHolder}
+                        value={value}
+                        onInput={(e) => handleInput}
+                        onChange={handleChange}
+                        style={style}
+                        className={className}
+                        type={type}
+                        onClick={(e) => handleClick}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                    />
+                    {showError && <span className={errorClassName} style={errorStyle}>{error}</span>}
+                </>
             );
         case 'textarea':
             return (
-                <textarea
-                    id={id}
-                    name={name}
-                    placeholder={placeHolder}
-                    value={value}
-                    onInput={(e)=>handleInput}
-                    onChange={handleChange}
-                    style={style}
-                    className={className}
-                    onClick={(e)=>handleClick}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                >
-                    {children}
-                </textarea>
+                <>
+                    <textarea
+                        id={id}
+                        name={name}
+                        placeholder={placeHolder}
+                        value={value}
+                        onInput={(e) => handleInput}
+                        onChange={handleChange}
+                        style={style}
+                        className={className}
+                        onClick={(e) => handleClick}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                    >
+                        {children}
+                    </textarea>
+                    {showError && <span className={errorClassName} style={errorStyle}>{error}</span>}
+                </>
             );
         case 'select':
             return (
-                <select
-                    id={id}
-                    name={name}
-                    value={value}
-                    onInput={(e)=>handleInput}
-                    onChange={handleChange}
-                    style={style}
-                    className={className}
-                    onClick={(e)=>handleClick}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                >
-                    {children}
-                </select>
+                <>
+                    <select
+                        id={id}
+                        name={name}
+                        value={value}
+                        onInput={(e) => handleInput}
+                        onChange={handleChange}
+                        style={style}
+                        className={className}
+                        onClick={(e) => handleClick}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                    >
+                        {children}
+                    </select>
+                    {showError && <span className={errorClassName} style={errorStyle}>{error}</span>}
+                </>
             );
         default:
             return (
-                <input
-                    id={id}
-                    name={name}
-                    placeholder={placeHolder}
-                    value={value}
-                    onInput={(e)=>handleInput}
-                    onChange={handleChange}
-                    style={style}
-                    className={className}
-                    type={type}
-                    onClick={(e)=>handleClick}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                />
+                <>
+                    <input
+                        id={id}
+                        name={name}
+                        placeholder={placeHolder}
+                        value={value}
+                        onInput={(e) => handleInput}
+                        onChange={handleChange}
+                        style={style}
+                        className={className}
+                        type={type}
+                        onClick={(e) => handleClick}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                    />
+                    {showError && <span className={errorClassName} style={errorStyle}>{error}</span>}
+                </>
             );
     }
 };
