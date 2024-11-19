@@ -1,6 +1,6 @@
 {
   "name": "react-validator-dev",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Real-time error messaging and supports field dependencies React hook for form validation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,7 +24,13 @@
         "type-checking",
         "useValidation",
         "field-validation",
-        "form-error-handling"
+        "form-error-handling",
+        "react-validator-dev",
+        "react-validator",
+        "react-validation-dev",
+        "validator",
+        "validator-dev",
+        "validation-dev"
     ],
   "scripts": {
     "build": "tsc",

@@ -22,10 +22,22 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importStar(require("react"));
 const DevForm_1 = require("./DevForm");
-const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className = "", type = "", style = {}, change = "", input = "", click = "", focus = "", blur = "", error = "", errorClassName = "", errorStyle = { color: 'red' }, validate = false, children }) => {
+const Field = (_a) => {
+    var { as = 'input', id = "", name = "", placeHolder = "", className = "", type = "", style = {}, change = "", input = "", click = "", focus = "", blur = "", error = "", errorClassName = "", errorStyle = { color: 'red' }, validate = false, children } = _a, props = __rest(_a, ["as", "id", "name", "placeHolder", "className", "type", "style", "change", "input", "click", "focus", "blur", "error", "errorClassName", "errorStyle", "validate", "children"]);
     const debounceDelay = 300;
     const [fieldType, setFieldType] = (0, react_1.useState)(as);
     const [value, setValue] = (0, react_1.useState)('');
@@ -78,19 +90,19 @@ const Field = ({ as = 'input', id = "", name = "", placeHolder = "", className =
     switch (fieldType) {
         case 'input':
             return (react_1.default.createElement(react_1.default.Fragment, null,
-                react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, type: type, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }),
+                react_1.default.createElement("input", Object.assign({ id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, type: type, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }, props)),
                 showError && react_1.default.createElement("span", { className: errorClassName, style: errorStyle }, error)));
         case 'textarea':
             return (react_1.default.createElement(react_1.default.Fragment, null,
-                react_1.default.createElement("textarea", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }, children),
+                react_1.default.createElement("textarea", Object.assign({ id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }, props), children),
                 showError && react_1.default.createElement("span", { className: errorClassName, style: errorStyle }, error)));
         case 'select':
             return (react_1.default.createElement(react_1.default.Fragment, null,
-                react_1.default.createElement("select", { id: id, name: name, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }, children),
+                react_1.default.createElement("select", Object.assign({ id: id, name: name, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }, props), children),
                 showError && react_1.default.createElement("span", { className: errorClassName, style: errorStyle }, error)));
         default:
             return (react_1.default.createElement(react_1.default.Fragment, null,
-                react_1.default.createElement("input", { id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, type: type, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }),
+                react_1.default.createElement("input", Object.assign({ id: id, name: name, placeholder: placeHolder, value: value, onInput: (e) => handleInput, onChange: handleChange, style: style, className: className, type: type, onClick: (e) => handleClick, onFocus: handleFocus, onBlur: handleBlur }, props)),
                 showError && react_1.default.createElement("span", { className: errorClassName, style: errorStyle }, error)));
     }
 };

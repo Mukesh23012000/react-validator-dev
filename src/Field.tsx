@@ -43,8 +43,9 @@ const Field: React.FC<Props> = ({
     errorClassName = "",
     errorStyle = { color: 'red' },
     validate = false,
-    children
-}) => {
+    children,
+    ...props
+}) => { 
     const debounceDelay = 300;
     const [fieldType, setFieldType] = useState<FieldType>(as);
     const [value, setValue] = useState<string | number>('');
@@ -119,6 +120,7 @@ const Field: React.FC<Props> = ({
                         onClick={(e) => handleClick}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        {...props}
                     />
                     {showError && <span className={errorClassName} style={errorStyle}>{error}</span>}
                 </>
@@ -138,6 +140,7 @@ const Field: React.FC<Props> = ({
                         onClick={(e) => handleClick}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        {...props}
                     >
                         {children}
                     </textarea>
@@ -158,6 +161,7 @@ const Field: React.FC<Props> = ({
                         onClick={(e) => handleClick}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        {...props}
                     >
                         {children}
                     </select>
@@ -180,6 +184,7 @@ const Field: React.FC<Props> = ({
                         onClick={(e) => handleClick}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
+                        {...props}
                     />
                     {showError && <span className={errorClassName} style={errorStyle}>{error}</span>}
                 </>
