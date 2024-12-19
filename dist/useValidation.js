@@ -103,7 +103,7 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
             }
         });
         if (JSON.stringify(errors.errors) !== JSON.stringify(newErrors)) {
-            const status = Object.values(newErrors).every((error) => !error.length);
+            const status = Object.values(newErrors).some((error) => !error.length);
             setErrors({ errors: newErrors, status });
         }
     };

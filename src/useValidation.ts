@@ -166,7 +166,7 @@ const useValidation = (data: { fields: Record<string, any>; validation: Validati
         });
 
         if (JSON.stringify(errors.errors) !== JSON.stringify(newErrors)) {
-            const status = Object.values(newErrors).every((error:any) => !error.length);
+            const status = Object.values(newErrors).some((error:any) => !error.length);
             setErrors({ errors: newErrors, status });
         }
     }
