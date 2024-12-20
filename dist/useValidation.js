@@ -42,9 +42,6 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
     }, []);
     const validateC = () => {
         const newErrors = {};
-        if (Object.keys(fields).length != Object.keys(validation.rules).length) {
-            return { errors: {}, status: true };
-        }
         Object.keys(fields).forEach((field) => {
             var _a;
             const multipleMessages = [];
@@ -107,7 +104,7 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
             if (!error.length) {
                 setFieldsInitailStaus(Object.assign(Object.assign({}, fieldsInitailStaus), { [field]: true }));
             }
-            if (fieldsInitailStaus[field] == true || submitted == true) {
+            if ((fieldsInitailStaus === null || fieldsInitailStaus === void 0 ? void 0 : fieldsInitailStaus[field]) == true || submitted == true) {
                 newErrors[field] = !isMultiple ? error : multipleMessages;
             }
         });

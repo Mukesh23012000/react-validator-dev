@@ -116,9 +116,6 @@ const useValidation = (
 
   const validateC = () => {
     const newErrors: Record<string, string> | any = {};
-    if (Object.keys(fields).length != Object.keys(validation.rules).length) {
-      return { errors: {}, status: true };
-    }
     Object.keys(fields).forEach((field) => {
       const multipleMessages: string[] = [];
       const value = fields[field];
@@ -223,7 +220,7 @@ const useValidation = (
       if (!error.length) {
         setFieldsInitailStaus({ ...fieldsInitailStaus, [field]: true });
       }
-      if (fieldsInitailStaus[field] == true || submitted == true) {
+      if (fieldsInitailStaus?.[field] == true || submitted == true) {
         newErrors[field] = !isMultiple ? error : multipleMessages;
       }
     });
