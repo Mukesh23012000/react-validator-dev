@@ -1,49 +1,55 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = require("react");
-const isRequiredCheck = (data, errorMessage) => !data ? errorMessage : '';
-const maxLengthCheck = (data, max, errorMessage) => data.length > max ? errorMessage : '';
-const minLengthCheck = (data, min, errorMessage) => data.length < min ? errorMessage : '';
-const excludedCharactersCheck = (data, chars, errorMessage) => chars.some((char) => data.includes(char)) ? errorMessage : '';
-const regexCheck = (data, regex, errorMessage) => new RegExp(regex).test(data) ? '' : errorMessage;
-const alphaCheck = (data, errorMessage) => /^[A-Za-z]+$/.test(data) ? '' : errorMessage;
+const isRequiredCheck = (data, errorMessage) => !data ? errorMessage : "";
+const maxLengthCheck = (data, max, errorMessage) => data.length > max ? errorMessage : "";
+const minLengthCheck = (data, min, errorMessage) => data.length < min ? errorMessage : "";
+const excludedCharactersCheck = (data, chars, errorMessage) => (chars.some((char) => data.includes(char)) ? errorMessage : "");
+const regexCheck = (data, regex, errorMessage) => new RegExp(regex).test(data) ? "" : errorMessage;
+const alphaCheck = (data, errorMessage) => /^[A-Za-z]+$/.test(data) ? "" : errorMessage;
 const emailCheck = (data, errorMessage) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(data) ? '' : errorMessage;
+    return emailRegex.test(data) ? "" : errorMessage;
 };
 const alphaWithDashCheck = (data, errorMessage) => {
     const regex = /^[A-Za-z]+(-[A-Za-z]+)*$/;
-    return regex.test(data) ? '' : errorMessage;
+    return regex.test(data) ? "" : errorMessage;
 };
-const numericCheck = (data, errorMessage) => /^\d+$/.test(data) ? '' : errorMessage;
+const numericCheck = (data, errorMessage) => /^\d+$/.test(data) ? "" : errorMessage;
 const isDateCheck = (data, errorMessage) => {
     const regex = /^\d{4}-\d{2}-\d{2}$/; // Example format YYYY-MM-DD
     const date = new Date(data);
-    return regex.test(data) && !isNaN(date.getTime()) ? '' : errorMessage;
+    return regex.test(data) && !isNaN(date.getTime()) ? "" : errorMessage;
 };
 const alphaWithSpaceCheck = (data, errorMessage) => {
     const regex = /^[A-Za-z]+( [A-Za-z]+)*$/;
-    return regex.test(data) ? '' : errorMessage;
+    return regex.test(data) ? "" : errorMessage;
 };
-const sameAsFieldCheck = (data, errorMessage, fieldValue) => data === fieldValue ? '' : errorMessage;
+const sameAsFieldCheck = (data, errorMessage, fieldValue) => (data === fieldValue ? "" : errorMessage);
 const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 300, validateAll = false) => {
-    const [errors, setErrors] = (0, react_1.useState)({ errors: {}, status: true });
+    const [errors, setErrors] = (0, react_1.useState)({
+        errors: {},
+        status: true,
+    });
     const { fields, validation } = data;
     const [fieldsInitailStaus, setFieldsInitailStaus] = (0, react_1.useState)();
     const [submitted, setsubmitted] = (0, react_1.useState)(true);
     (0, react_1.useEffect)(() => {
         let status = Object.assign({}, fields);
-        Object.keys(fields).forEach((field) => status[field] = false);
+        Object.keys(fields).forEach((field) => (status[field] = false));
         setFieldsInitailStaus(status);
         setsubmitted(submit);
     }, []);
     const validateC = () => {
         const newErrors = {};
+        if (Object.keys(fields).length != Object.keys(validation.rules).length) {
+            return { errors: {}, status: true };
+        }
         Object.keys(fields).forEach((field) => {
             var _a;
             const multipleMessages = [];
             const value = fields[field];
-            let error = '';
+            let error = "";
             const rules = validation.rules[field];
             const messages = (_a = validation === null || validation === void 0 ? void 0 : validation.messages) === null || _a === void 0 ? void 0 : _a[field];
             if (rules === null || rules === void 0 ? void 0 : rules.isRequired) {
@@ -51,11 +57,13 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
                 (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
             }
             if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.maxLength) !== undefined) {
-                error = maxLengthCheck(value, rules.maxLength, (messages === null || messages === void 0 ? void 0 : messages.maxLength) || `The ${field} length should be at most ${rules.maxLength}`);
+                error = maxLengthCheck(value, rules.maxLength, (messages === null || messages === void 0 ? void 0 : messages.maxLength) ||
+                    `The ${field} length should be at most ${rules.maxLength}`);
                 (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
             }
             if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.minLength) !== undefined) {
-                error = minLengthCheck(value, rules.minLength, (messages === null || messages === void 0 ? void 0 : messages.minLength) || `The ${field} length should be at least ${rules.minLength}`);
+                error = minLengthCheck(value, rules.minLength, (messages === null || messages === void 0 ? void 0 : messages.minLength) ||
+                    `The ${field} length should be at least ${rules.minLength}`);
                 (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
             }
             if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.excludedCharacters)) {
@@ -92,7 +100,8 @@ const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 
             }
             if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.sameAsField)) {
                 const otherFieldValue = fields[rules.sameAsField];
-                error = sameAsFieldCheck(value, (messages === null || messages === void 0 ? void 0 : messages.sameAsField) || `Please ensure ${field} matches ${rules.sameAsField}`, otherFieldValue);
+                error = sameAsFieldCheck(value, (messages === null || messages === void 0 ? void 0 : messages.sameAsField) ||
+                    `Please ensure ${field} matches ${rules.sameAsField}`, otherFieldValue);
                 (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
             }
             if (!error.length) {

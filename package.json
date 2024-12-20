@@ -1,6 +1,6 @@
 {
   "name": "react-validator-dev",
-  "version": "2.1.9",
+  "version": "2.2.1",
   "description": "Real-time error messaging and supports field dependencies React hook for form validation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,29 +9,29 @@
     "url": "https://github.com/Mukesh23012000/react-validator-dev.git"
   },
   "keywords": [
-        "react",
-        "hook",
-        "validation",
-        "form-validation",
-        "react-hook",
-        "validation-hook",
-        "input-validation",
-        "error-messages",
-        "real-time-validation",
-        "custom-validation",
-        "react-forms",
-        "form-check",
-        "type-checking",
-        "useValidation",
-        "field-validation",
-        "form-error-handling",
-        "react-validator-dev",
-        "react-validator",
-        "react-validation-dev",
-        "validator",
-        "validator-dev",
-        "validation-dev"
-    ],
+    "react",
+    "hook",
+    "validation",
+    "form-validation",
+    "react-hook",
+    "validation-hook",
+    "input-validation",
+    "error-messages",
+    "real-time-validation",
+    "custom-validation",
+    "react-forms",
+    "form-check",
+    "type-checking",
+    "useValidation",
+    "field-validation",
+    "form-error-handling",
+    "react-validator-dev",
+    "react-validator",
+    "react-validation-dev",
+    "validator",
+    "validator-dev",
+    "validation-dev"
+  ],
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
@@ -40,7 +40,7 @@
   "license": "ISC",
   "dependencies": {
     "react": "^18.3.1",
-  "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1"
   },
   "files": [
     "dist",
