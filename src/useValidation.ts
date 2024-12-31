@@ -123,15 +123,18 @@ const useValidation = (
 
       const rules = validation.rules[field];
       const messages = validation?.messages?.[field];
-
+      let isRequired = false;
       if (rules?.isRequired) {
         error = isRequiredCheck(
           value,
           messages?.isRequired || `Please enter the ${field}`
         );
-        error?.length && multipleMessages.push(error);
+        if(error?.length){
+          isRequired = true;
+          multipleMessages.push(error);
+        }
       }
-      if ((!error || isMultiple) && rules?.maxLength !== undefined) {
+      if ((!error || isMultiple ) && rules?.maxLength !== undefined && !isRequired) {
         error = maxLengthCheck(
           value,
           rules.maxLength,
@@ -140,7 +143,7 @@ const useValidation = (
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.minLength !== undefined) {
+      if ((!error || isMultiple ) && rules?.minLength !== undefined && !isRequired) {
         error = minLengthCheck(
           value,
           rules.minLength,
@@ -149,7 +152,7 @@ const useValidation = (
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.excludedCharacters) {
+      if ((!error || isMultiple ) && rules?.excludedCharacters && !isRequired) {
         error = excludedCharactersCheck(
           value,
           rules.excludedCharacters,
@@ -157,7 +160,7 @@ const useValidation = (
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.regex) {
+      if ((!error || isMultiple ) && rules?.regex && !isRequired) {
         error = regexCheck(
           value,
           rules.regex,
@@ -165,49 +168,49 @@ const useValidation = (
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.alpha) {
+      if ((!error || isMultiple ) && rules?.alpha && !isRequired) {
         error = alphaCheck(
           value,
           messages?.alpha || `Please enter valid ${field}`
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.email) {
+      if ((!error || isMultiple ) && rules?.email && !isRequired) {
         error = emailCheck(
           value,
           messages?.email || `Please enter a valid ${field}`
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.numeric) {
+      if ((!error || isMultiple ) && rules?.numeric && !isRequired) {
         error = numericCheck(
           value,
           messages?.numeric || `Please enter a valid ${field}`
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.date) {
+      if ((!error || isMultiple ) && rules?.date && !isRequired) {
         error = isDateCheck(
           value,
           messages?.date || `Please enter a valid ${field}`
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.alphaDash) {
+      if ((!error || isMultiple ) && rules?.alphaDash && !isRequired) {
         error = alphaWithDashCheck(
           value,
           messages?.alphaDash || `Please enter valid ${field}`
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.alphaSpace) {
+      if ((!error || isMultiple ) && rules?.alphaSpace && !isRequired) {
         error = alphaWithSpaceCheck(
           value,
           messages?.alphaSpace || `Please enter valid ${field}`
         );
         error?.length && multipleMessages.push(error);
       }
-      if ((!error || isMultiple) && rules?.sameAsField) {
+      if ((!error || isMultiple ) && rules?.sameAsField && !isRequired) {
         const otherFieldValue = fields[rules.sameAsField];
         error = sameAsFieldCheck(
           value,
