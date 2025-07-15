@@ -1,45 +1,9 @@
-interface ValidationRule {
-    isRequired?: boolean;
-    maxLength?: number;
-    minLength?: number;
-    excludedCharacters?: string[];
-    regex?: string | any;
-    alpha?: boolean;
-    email?: boolean;
-    numeric?: boolean;
-    date?: boolean;
-    alphaDash?: boolean;
-    alphaSpace?: boolean;
-    sameAsField?: string;
-}
-interface ErrorMessage {
-    isRequired?: string;
-    maxLength?: string;
-    minLength?: string;
-    excludedCharacters?: string;
-    regex?: string;
-    alpha?: string;
-    email?: string;
-    numeric?: string;
-    date?: string;
-    alphaDash?: string;
-    alphaSpace?: string;
-    sameAsField?: string;
-}
-interface Validation {
-    rules: {
-        [key: string]: ValidationRule;
-    };
-    messages?: {
-        [key: string]: ErrorMessage;
-    };
-}
-interface ValidationErrors {
+import { ValidateProps } from "./types";
+declare const useValidation: (props: ValidateProps) => {
+    markTouched: (field: string) => void;
     errors: Record<string, string>;
-    status: boolean;
-}
-declare const useValidation: (data: {
-    fields: Record<string, any>;
-    validation: Validation;
-}, isMultiple?: boolean, submit?: boolean, debounceDelay?: number, validateAll?: boolean) => ValidationErrors[];
+    isValid: boolean;
+    touchedFields: Record<string, boolean>;
+};
 export default useValidation;
+//# sourceMappingURL=useValidation.d.ts.map

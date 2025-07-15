@@ -1,196 +1,160 @@
 # react-validator-dev
-An NPM package providing real-time error messaging and supporting field dependencies for React forms.
+
+> A flexible and customizable real-time form validation library for React.
+
+![npm](https://img.shields.io/npm/v/react-validator-dev) ![license](https://img.shields.io/npm/l/react-validator-dev)
+
+---
 
 ## Installation
 
-```bash
+```bash 
 npm install react-validator-dev
 ```
+
 ## Description
 
-The `useValidation` hook provides a customizable validation solution for React forms. It allows developers to define various validation rules and error messages for form fields, ensuring user input meets specified criteria.
-
-The `Field` component is a reusable, flexible component that abstracts the form input fields (`input`, `textarea`, `select`, etc.). It allows you to define different types of fields and pass additional properties such as `placeholder`, `style`, and `className`.
-
-`DevForm` is used to wrap your entire form, and it manages the form’s state and submission process. You pass in initial values, a function to handle field changes `(changeField)`, and optionally a submit function `(submit)`.
+`react-validator-dev` provides a powerful `useValidation` hook for real-time and rule-based form validation in React applications.
 
 ## Features:
 
-- **Flexible Validation Rules:** Supports multiple validation options including required fields, max/min length, regex patterns, character exclusions, and specific formats (email, numeric, date).
-- **Custom Error Messages:** Allows for personalized error messages for each validation rule, making it easy to inform users of specific input issues.
-- **Dynamic Validation:** Automatically validates fields whenever their values change, providing real-time feedback.
-- **Field Dependency Checks:** Supports rules that require values to match another field, useful for confirmations like passwords.
--**Debouncing:** Reduces the frequency of validation checks during rapid input, enhancing performance and user experience.
+- **Flexible Validation Rules:** `required`, `regex`, `min/maxLength`, `email`, `numeric`, and more.
+- **Custom Error Messages:** Friendly and specific messages per rule.
+- **Real-time Validation:** Re-validates on every input change.
+- **Field Dependencies:**  Supports sameAsField for confirm password, etc.
+- **Debounced Checks:** Prevents excessive validations while typing.
+- **Multiple Errors Support:** Return multiple errors per field (`isMultiple: true`).
 
-## Parameters:
-  1. **fields:**  An object representing the current values of your form fields. The keys of this object should match the field names defined in your validation rules. This parameter is crucial as it allows the validation hook to assess the current state of each field.
-  2. **validation:** An object that defines the validation rules and corresponding error messages for each field in your form. This object should contain two properties:
-      - ***rules:*** An object where each key corresponds to a field name, and the value is an object specifying the validation rules for that field.
-      - ***messages (optional):*** An object containing custom error messages for each field and validation rule. If not provided, default messages will be used.
-  3. **isMultiple (optional):** When set to true, this parameter enables the hook to return an    array of error messages for each field instead of a single error string. This is useful for scenarios where multiple validation rules can fail simultaneously for a single field. The default value is false.
-  4. **submitted (optional):** Indicates whether the form has been submitted. This can trigger validation checks when the form is submitted. If set to true, the hook will validate all fields even if they have not changed. This is helpful for ensuring all fields are validated before final submission.
-  5.**debounceDelay (optional):** Specifies the delay (in milliseconds) for the debounce functionality. This helps reduce the frequency of validation checks while the user is typing. The default value is 300 milliseconds, but this can be adjusted based on the needs of your application
+## ⚙️ Parameters
 
-## Usage:
+The `useValidation` hook accepts a single props object with the following properties:
 
-1. Define your validation rules and messages.
-2. Pass your form data, validation configuration, and the submitted form status to the useValidation hook.
-3. Access the error messages and validation status to manage form submission and display feedback.
-5. Optionally, specify a debounce delay (in milliseconds) to control the timing of validation checks.
+| Parameter         | Type                                                                 | Required | Default | Description                                                                                             |
+|-------------------|----------------------------------------------------------------------|----------|---------|-----------------------------------------------------------------------------------------------------|
+| `fields`          | `Record<string, any>`                                                | Yes      | —       | An object representing the current values of the form fields. Keys are field names, values are inputs. |
+| `validation`      | `{ rules: object; messages?: object }`                              | Yes      | —       | Object defining validation rules and optional custom error messages for each field.                   |
+| `isMultiple`      | `boolean`                                                           | No       | `false` | If true, returns an array of error messages per field instead of just the first error string.         |
+| `debounceDelay`   | `number`                                                            | No       | `300`   | Time in milliseconds to debounce the validation function, to optimize performance during fast input. |
+| `customValidators`| `Record<string, (value: any, fields: any) => string \| null>`      | No       | —       | Custom validation functions per field, receiving the field value and all fields; return error string or null. |
 
-## Example:
+### Details:
 
-```javascript
-import { useState } from 'react';
-import { useValidation, Field, DevForm } from 'react-validator-dev';
+- **`fields`**: The source of truth for your form state, typically an object managed via React's `useState` or similar.
+- **`validation.rules`**: Defines validation logic per field, e.g., `{ name: { isRequired: true, maxLength: 50 } }`.
+- **`validation.messages`**: Optional custom error messages for each rule and field.
+- **`isMultiple`**: Enables returning all validation errors per field instead of just the first.
+- **`debounceDelay`**: Debounces validation calls during fast input, improving performance and UX.
+- **`customValidators`**: Allows you to define custom validation logic per field; functions receive `(value, fields)` and return an error message string or `null`.
 
-function App() {
 
-  const [fields,setFields] = useState({
-    name:"",
-    email:""
-  });
+## Usage
 
-  const [formSubmitStatus,setFormSubmitStatus] = useState(false)
+1. **Define your form fields state and validation rules**
 
-  const validation = {
-    rules :{
-      name : {
-        isRequired: true
-      },
-      email : {
-        isRequired: true,
-        email : true
-      }
-    },
-    messages :{
-      name : {
-        isRequired : 'Whoops! Please tell us your name!'
-      },
-      email : {
-        isRequired : 'Oops! We need your email to keep the fun going!',
-        email: 'Oops! That email looks a bit wonky. Can you try a valid one?'
-      }
-    }
-  }
-  const [error] = useValidation({fields,validation})
-
-  const handleFieldChange = (fieldValues:any) => {
-    setFields(fieldValues)
-  }
-
-  const handleSubmit = (event) => {
-      setFormSubmitStatus(true)
-      event.preventDefault()
-      if(error.status === true){
-        submitUserDetails(fields)
-      }
-  }
-
-  return (
-    <div className="App">
-      <DevForm initialValues={fields} changeField={handleFieldChange} submit={handleSubmit}>
-        <div>
-          <label>Name</label>
-          <Field type='text' name="name" />
-          <span style={{color:'red'}}> {error.errors?.name} </span>
-        </div>
-        <div>
-          <label>Email</label>
-          <Field type='text' name="email" />
-          <span style={{color:'red'}}> {error.errors?.email} </span>
-        </div>
-        <button type='submit'>Submit</button>
-      </DevForm>
-    </div>
-  );
-}
-
-export default App;
-```
-## Example with multiple errors for same field:
-```javascript 
-import { useState } from 'react';
-import { useValidation, Field, DevForm } from 'react-validator-dev';
-
-function MyForm() {
-    const [fields, setFields] = useState({
-    username: '',
-    password: '',
-});
+```jsx
+import React, { useState } from 'react';
+import useValidation from 'react-validator-dev';
 
 const validation = {
-    rules: {
-        username: {
-            isRequired: true,
-            maxLength: 10,
-            excludedCharacters: ['@', '#'],
-        },
-        password: {
-            isRequired: true,
-            minLength: 6,
-            maxLength: 12,
-        },
+  rules: {
+    name: { isRequired: true, maxLength: 50 },
+    email: { isRequired: true, email: true },
+  },
+  messages: {
+    name: {
+      isRequired: 'Name is required.',
+      maxLength: 'Name cannot exceed 50 characters.',
     },
-    messages: {
-        username: {
-            isRequired: 'Username is required.',
-            maxLength: 'Username must be 10 characters or less.',
-            excludedCharacters: 'Username cannot contain @ or #.',
-        },
-        password: {
-            isRequired: 'Password is required.',
-            minLength: 'Password must be at least 6 characters long.',
-            maxLength: 'Password cannot exceed 12 characters.',
-        },
+    email: {
+      isRequired: 'Email is required.',
+      email: 'Please enter a valid email address.',
     },
+  },
 };
 
-const [error]:any = useValidation({ fields, validation }, true); // Set isMultiple to true
+function MyForm() {
+  const [fields, setFields] = useState({ name: '', email: '' });
 
-const handleFieldChange = (fieldValues:any) => {
-  setFields(fieldValues)
-}
+  const { errors, isValid, touchedFields, markTouched } = useValidation({
+    fields,
+    validation,
+    debounceDelay: 300,
+  });
 
-const handleSubmit = (event:any) => {
-    event.preventDefault();
-    if (error.status) {
-        submitUserData(fields);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFields(prev => ({ ...prev, [name]: value }));
+    markTouched(name);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isValid) {
+      // Submit form
+      console.log('Submitting', fields);
+    } else {
+      // Mark all fields as touched to show errors
+      Object.keys(fields).forEach(field => markTouched(field));
     }
-};
+  };
 
-return (
-    <DevForm initialValues={fields} changeField={handleFieldChange} submit={handleSubmit}>
-        <div>
-            <label>Username:</label>
-            <Field name="username" id="username" placeHolder="Enter your username" as="input" />
-            {error.errors?.username && (
-                <ul>
-                    {error.errors.username?.map((msg, index) => (
-                        <li key={index}>{msg}</li>
-                    ))}
-                </ul>
-            )}
-        </div>
-        <div>
-            <label>Password:</label>
-            <Field name="password" id="password" placeHolder="Enter your password" as="input" />
-            {error.errors?.password && (
-                <ul>
-                    {error.errors.password?.map((msg, index) => (
-                        <li key={index}>{msg}</li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    </DevForm>);
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Name</label><br />
+        <input
+          name="name"
+          value={fields.name}
+          onChange={handleChange}
+          onBlur={() => markTouched('name')}
+        />
+        {touchedFields.name && errors.name && (
+          <div style={{ color: 'red' }}>{errors.name}</div>
+        )}
+      </div>
+      <div>
+        <label>Email</label><br />
+        <input
+          name="email"
+          value={fields.email}
+          onChange={handleChange}
+          onBlur={() => markTouched('email')}
+        />
+        {touchedFields.email && errors.email && (
+          <div style={{ color: 'red' }}>{errors.email}</div>
+        )}
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
 }
 ```
 
-## Return Value:
+## Return Value
 
-- An object containing error messages for each field and a validation status indicating if all fields are valid.
+The `useValidation` hook returns an object containing the following properties:
 
+| Property       | Type                     | Description                                                                                   |
+|----------------|--------------------------|-----------------------------------------------------------------------------------------------|
+| `errors`       | `Record<string, string \| string[]>` | An object mapping field names to their error messages. If `isMultiple` is `true`, errors are arrays; otherwise, strings. |
+| `isValid`      | `boolean`                | Indicates whether the entire form is valid (i.e., no validation errors present).              |
+| `touchedFields`| `Record<string, boolean>`| Tracks which fields have been interacted with (marked as "touched"). Useful for controlling error display.  |
+| `markTouched`  | `(field: string) => void`| A function to mark a specific field as touched. Should be called on field interaction (e.g., `onBlur`).         |
+
+---
+
+### Example
+
+```tsx
+const { errors, isValid, touchedFields, markTouched } = useValidation({ fields, validation });
+
+console.log(errors.name);          // Error message(s) for the 'name' field
+console.log(isValid);              // true if no errors, false otherwise
+console.log(touchedFields.email); // true if the email field was touched by the user
+
+// Mark a field as touched
+markTouched('password');
+```
 ## Validation Rules
 
 ### 1. `isRequired`
@@ -250,79 +214,36 @@ return (
 
 ### 12. `sameAsField`
 - **Description**: Validates that the field input matches the value of another specified field. An error will be triggered if the values do not match.
-- **Type**: `string`
+- **Type**: `string` (field name to match)
 - **Default**: `-`
+
+### 13. `custom`
+- **Description**: Allows passing a custom validation function for the field. This function receives the current field value and all fields as arguments. It should return a string error message if invalid, or an empty string/null if valid.
+- **Type**: `(value: any, fields: Record<string, any>) => string | null`
+- **Default**: `-`
+- **Example**:
+  ```js
+  custom: (value, fields) => {
+    if (value !== fields.otherField) return "Values do not match!";
+    return null;
+  }
+  ```
 
 ## Error Messages
 
-You can define custom error messages for each validation rule under the `messages` property. If not provided, default messages will be used.
-
-## `DevForm` Props
-### 1. initialValues :
-- **Description**: This is an object that defines the initial state of the form fields. Each key in the object represents the name of a field, and its value can be a `string` or `number`.
-- **Type**: `{ [key: string]: string | number }`
-- **Example**: `{ name: '', email: '' }`
-
-### 2. changeField :
-- **Description**: This function is called whenever any field in the form is updated. The `fields` parameter passed to this function contains the current state of the entire form.
-- **Type**: `function`
-- **Example**: `If a user updates the name field, changeField will be called with the updated fields object.`
-
-### 3. submit :
-- **Description**: This optional function will be called when the form is submitted. The fields object passed to it will contain the current state of all form fields. If not provided, the form will not have a custom submit handler.
-- **Type**: `function`
-- **Example**: `If you want to send the form data to an API when the form is submitted, you would pass a submit function here.`
-
-### 4. children :
-- **Description**: This prop represents the form fields (or any other components) that will be nested inside the DevForm. Typically, this is where you include the Field components.
-- **Type**: `ReactNode`
-- **Example**: `<Field name="name" as="input" /> will be nested as a child`
-
-
-## `Field` Props
-### 1. as :
-- **Description**: This prop determines the type of field to render.
-- **Type**: `('' | 'input' | 'select' | 'textarea')`
-- **Default**: `input`
-
-### 2. id :
-- **Description**: This is an optional id for the field, which can be used for associating the field with a <label> or for styling.
-- **Type**: `string` (optional)
-- **Default**: ``
-
-### 3. name :
-- **Description**: The name of the field. This is a key in the form's state object (fields) and must be unique for each field.
-- **Type**: `string` (optional)
-- **Default**: ``
-
-### 4. placeHolder :
-- **Description**: This is an optional placeholder text to display inside the field when it's empty. It's typically used for input and textarea fields.
-- **Type**: `string` (optional)
-- **Default**: ``
-
-### 5. className :
-- **Description**: This is an optional CSS class to apply custom styling to the field.
-- **Type**: `string` (optional)
-- **Default**: ``
-
-### 6. style :
-- **Description**: This is an optional inline style object that can be applied to the field for custom styling.
-- **Type**: `Style ({ [key: string]: string | number })` (optional)
-- **Default**: ``
-
-### 7. change :
-- **Description**: A callback function that gets called whenever the field value changes. The value is passed to the change function.
-- **Type**: `function` (optional)
-- **Default**: ``
-
-### 8. input :
-- **Description**: A callback function to be called when the input value changes. Unlike change, this function is triggered during the input change event and can be useful for things like real-time validation or calculations.
-- **Type**: `function` (optional)
-- **Default**: ``
-
-### 4. children :
-- **Description**: This is used to pass children elements to the field. For example, if the field type is 'select', the options will be passed here.
-- **Type**: `ReactNode`
+You can define custom error messages for each validation rule inside the `messages` object for each field. If no custom message is provided, a default error message will be used.
+- **Example**:
+```js
+  messages: {
+    username: {
+      isRequired: "Username is mandatory!",
+      maxLength: "Username cannot exceed 15 characters.",
+    },
+    password: {
+      custom: "Password must include a special character.",
+    }
+  }
+```
 
 ## Get Started:
 
@@ -330,4 +251,6 @@ Start improving user experience in your forms by implementing real-time validati
 
 ---
 
-Feel free to adjust any part of the description to better match your vision or the features you want to emphasize!
+Feel free to customize or extend the validation rules and messages to perfectly fit your application needs.
+
+If you want, I can help you generate example snippets or usage guides for the **custom** validator as well!

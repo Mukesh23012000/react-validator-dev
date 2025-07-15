@@ -1,256 +1,134 @@
 import { useState, useEffect } from "react";
+import { ValidateProps, ReturnAPIs } from "./types";
+import { mandatoryProps, optionalProps } from "./exceptionHandler";
+import { validators } from "./validators";
 
-interface ValidationRule {
-  isRequired?: boolean;
-  maxLength?: number;
-  minLength?: number;
-  excludedCharacters?: string[];
-  regex?: string | any;
-  alpha?: boolean;
-  email?: boolean;
-  numeric?: boolean;
-  date?: boolean;
-  alphaDash?: boolean;
-  alphaSpace?: boolean;
-  sameAsField?: string;
-}
+const useValidation = (props:ValidateProps) => {
 
-interface ErrorMessage {
-  isRequired?: string;
-  maxLength?: string;
-  minLength?: string;
-  excludedCharacters?: string;
-  regex?: string;
-  alpha?: string;
-  email?: string;
-  numeric?: string;
-  date?: string;
-  alphaDash?: string;
-  alphaSpace?: string;
-  sameAsField?: string;
-}
+  //Exception handling for props
+  const { fields, validation } = mandatoryProps(props);
+  const { isMultiple, debounceDelay, customValidators} = optionalProps(props);
 
-interface Validation {
-  rules: { [key: string]: ValidationRule };
-  messages?: { [key: string]: ErrorMessage };
-}
-
-interface ValidationErrors {
-  errors: Record<string, string>;
-  status: boolean;
-}
-
-const isRequiredCheck = (data: any, errorMessage: string) =>
-  !data ? errorMessage : "";
-
-const maxLengthCheck = (data: any, max: number, errorMessage: string) =>
-  data.length > max ? errorMessage : "";
-
-const minLengthCheck = (data: any, min: number, errorMessage: string) =>
-  data.length < min ? errorMessage : "";
-
-const excludedCharactersCheck = (
-  data: any,
-  chars: string[],
-  errorMessage: string
-) => (chars.some((char) => data.includes(char)) ? errorMessage : "");
-
-const regexCheck = (data: any, regex: string, errorMessage: string) =>
-  new RegExp(regex).test(data) ? "" : errorMessage;
-
-const alphaCheck = (data: any, errorMessage: string) =>
-  /^[A-Za-z]+$/.test(data) ? "" : errorMessage;
-
-const emailCheck = (data: string, errorMessage: string) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(data) ? "" : errorMessage;
-};
-
-const alphaWithDashCheck = (data: string, errorMessage: string) => {
-  const regex = /^[A-Za-z]+(-[A-Za-z]+)*$/;
-  return regex.test(data) ? "" : errorMessage;
-};
-
-const numericCheck = (data: string, errorMessage: string) =>
-  /^\d+$/.test(data) ? "" : errorMessage;
-
-const isDateCheck = (data: string, errorMessage: string) => {
-  const regex = /^\d{4}-\d{2}-\d{2}$/; // Example format YYYY-MM-DD
-  const date = new Date(data);
-  return regex.test(data) && !isNaN(date.getTime()) ? "" : errorMessage;
-};
-
-const alphaWithSpaceCheck = (data: string, errorMessage: string) => {
-  const regex = /^[A-Za-z]+( [A-Za-z]+)*$/;
-  return regex.test(data) ? "" : errorMessage;
-};
-
-const sameAsFieldCheck = (
-  data: string,
-  errorMessage: string,
-  fieldValue: string
-) => (data === fieldValue ? "" : errorMessage);
-
-const useValidation = (
-  data: { fields: Record<string, any>; validation: Validation },
-  isMultiple = false,
-  submit: boolean = true,
-  debounceDelay = 300,
-  validateAll = false
-) => {
-  const [errors, setErrors] = useState<ValidationErrors>({
+  const [returnAPIs, setReturnAPIs] = useState<ReturnAPIs>({
     errors: {},
-    status: true,
+    isValid: false,
+    touchedFields: {},
   });
 
-  const { fields, validation } = data;
-  const [fieldsInitailStaus, setFieldsInitailStaus] = useState<any>();
-  const [submitted, setsubmitted] = useState(true);
+  const markTouched = (field: string): void => {
+    setReturnAPIs((prev) => ({
+      ...prev,
+      touchedFields: {
+        ...prev.touchedFields,
+        [field]: true,
+      },
+    }));
+  };
 
-  useEffect(() => {
-    let status = { ...fields };
-    Object.keys(fields).forEach((field) => (status[field] = false));
-    setFieldsInitailStaus(status);
-    setsubmitted(submit);
-  }, []);
+  const validate = ():void => {
+    const newErrors:Record<string, string> | any = {};
 
-  const validateC = () => {
-    const newErrors: Record<string, string> | any = {};
     Object.keys(fields).forEach((field) => {
-      const multipleMessages: string[] = [];
       const value = fields[field];
-      let error = "";
-
       const rules = validation.rules[field];
-      const messages = validation?.messages?.[field];
-      let isRequired = false;
-      if (rules?.isRequired) {
-        error = isRequiredCheck(
-          value,
-          messages?.isRequired || `Please enter the ${field}`
-        );
-        if(error?.length){
-          isRequired = true;
+      if (!rules) return;
+      const messages = validation.messages?.[field] || {};
+      const multipleMessages: string[] = [];
+      let hasError = false;
+
+      // isRequired check
+      if(rules.isRequired){
+        const error = validators.isRequired(value, messages.isRequired || `Please enter the ${field}`);
+        if(error){
           multipleMessages.push(error);
+          hasError = true;
+          if(!isMultiple){
+            newErrors[field] = error;
+            return;
+          }
         }
       }
-      if ((!error || isMultiple ) && rules?.maxLength !== undefined && !isRequired) {
-        error = maxLengthCheck(
-          value,
-          rules.maxLength,
-          messages?.maxLength ||
-            `The ${field} length should be at most ${rules.maxLength}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.minLength !== undefined && !isRequired) {
-        error = minLengthCheck(
-          value,
-          rules.minLength,
-          messages?.minLength ||
-            `The ${field} length should be at least ${rules.minLength}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.excludedCharacters && !isRequired) {
-        error = excludedCharactersCheck(
-          value,
-          rules.excludedCharacters,
-          messages?.excludedCharacters || `Please enter valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.regex && !isRequired) {
-        error = regexCheck(
-          value,
-          rules.regex,
-          messages?.regex || `The ${field} format is invalid`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.alpha && !isRequired) {
-        error = alphaCheck(
-          value,
-          messages?.alpha || `Please enter valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.email && !isRequired) {
-        error = emailCheck(
-          value,
-          messages?.email || `Please enter a valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.numeric && !isRequired) {
-        error = numericCheck(
-          value,
-          messages?.numeric || `Please enter a valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.date && !isRequired) {
-        error = isDateCheck(
-          value,
-          messages?.date || `Please enter a valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.alphaDash && !isRequired) {
-        error = alphaWithDashCheck(
-          value,
-          messages?.alphaDash || `Please enter valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.alphaSpace && !isRequired) {
-        error = alphaWithSpaceCheck(
-          value,
-          messages?.alphaSpace || `Please enter valid ${field}`
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if ((!error || isMultiple ) && rules?.sameAsField && !isRequired) {
-        const otherFieldValue = fields[rules.sameAsField];
-        error = sameAsFieldCheck(
-          value,
-          messages?.sameAsField ||
-            `Please ensure ${field} matches ${rules.sameAsField}`,
-          otherFieldValue
-        );
-        error?.length && multipleMessages.push(error);
-      }
-      if (!error.length) {
-        setFieldsInitailStaus({ ...fieldsInitailStaus, [field]: true });
-      }
-      if (fieldsInitailStaus?.[field] == true || submitted == true) {
-        newErrors[field] = !isMultiple ? error : multipleMessages;
-      }
-    });
 
-    if (JSON.stringify(errors.errors) !== JSON.stringify(newErrors)) {
-      const status = Object.values(newErrors).some(
-        (error: any) => error.length
-      );
-      setErrors({ errors: newErrors, status });
+      // Custom validator check 
+      if (rules.custom && customValidators?.[field]) {
+        const error = customValidators[field](value, fields);
+        if (error) {
+          if (!isMultiple) {
+            newErrors[field] = error;
+            return;
+          } else {
+            multipleMessages.push(error);
+          }
+        }
+      }
+
+      // Additional checks if not failed by isRequired
+      if(!hasError || isMultiple){
+        const checks: [string, any][] = Object.entries(rules).filter(([key]) => key !== "isRequired");
+
+        for (const [rule, ruleValue] of checks) {
+          let error = "";
+          switch (rule) {
+            case "maxLength":
+              error = validators.maxLength(value, ruleValue, messages.maxLength || `The ${field} length should be at most ${ruleValue}`);
+              break;
+            case "minLength":
+              error = validators.minLength(value, ruleValue, messages.minLength || `The ${field} length should be at least ${ruleValue}`);
+              break;
+            case "excludedCharacters":
+              error = validators.excludedCharacters(value, ruleValue, messages.excludedCharacters || `Please enter valid ${field}`);
+              break;
+            case "regex":
+              error = validators.regex(value, ruleValue, messages.regex || `The ${field} format is invalid`);
+              break;
+            case "alpha":
+              error = validators.alpha(value, messages.alpha || `Please enter valid ${field}`);
+              break;
+            case "alphaDash":
+              error = validators.alphaDash(value, messages.alphaDash || `Please enter valid ${field}`);
+              break;
+            case "alphaSpace":
+              error = validators.alphaSpace(value, messages.alphaSpace || `Please enter valid ${field}`);
+              break;
+            case "numeric":
+              error = validators.numeric(value, messages.numeric || `Please enter valid ${field}`);
+              break;
+            case "email":
+              error = validators.email(value, messages.email || `Please enter a valid ${field}`);
+              break;
+            case "date":
+              error = validators.date(value, messages.date || `Please enter a valid ${field}`);
+              break;
+            case "sameAsField":
+              const otherFieldValue = fields[ruleValue];
+              error = validators.sameAsField(value, otherFieldValue, messages.sameAsField || `Please ensure ${field} matches ${ruleValue}`);
+              break;
+          }
+
+          if(error){
+            if (!isMultiple) {
+              newErrors[field] = error;
+              return;
+            } else {
+              multipleMessages.push(error);
+            }
+          }
+        }
+      }
+      newErrors[field] = isMultiple ? multipleMessages : "";
+    });
+    if (JSON.stringify(returnAPIs.errors) !== JSON.stringify(newErrors)) {
+      const hasErrors = Object.values(newErrors).some((e) => Array.isArray(e) ? e.length > 0 : !!e);
+      setReturnAPIs((prev)=> ({...prev, errors: newErrors, isValid: !hasErrors }));
     }
   };
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      validateC();
-    }, debounceDelay);
+    const handler = setTimeout(() =>  validate() , debounceDelay);
+    return () => clearTimeout(handler);
+  }, [fields, validation, debounceDelay]);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [fields, validation, debounceDelay, submitted]);
-
-  useEffect(() => {
-    validateAll && setsubmitted(true);
-  }, [validateAll]);
-
-  return [errors];
+  return {...returnAPIs,markTouched};
 };
 
 export default useValidation;

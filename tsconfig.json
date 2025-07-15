@@ -1,13 +1,21 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "jsx": "react",
-      "declaration": true,
-      "outDir": "./dist",
-      "strict": true,
-      "esModuleInterop": true
-    },
-    "include": ["src/**/*"]
-  }
-  
+  "compilerOptions": {
+    "target": "ES6",                        // Output modern JS
+    "module": "ESNext",                     // Use ESNext for bundlers
+    "lib": ["DOM", "ESNext"],               // Support DOM + modern JS features
+    "jsx": "react-jsx",                     // Use new JSX transform (React 17+)
+    "declaration": true,                    // Emit .d.ts files
+    "declarationMap": true,                 // Helpful for debugging d.ts
+    "sourceMap": true,                      // Optional: allows source maps in output
+    "outDir": "./dist",                     // Output directory
+    "rootDir": "./src",                     // Where source files live
+    "moduleResolution": "node",             // Resolve like Node
+    "resolveJsonModule": true,              // Allow importing JSON
+    "esModuleInterop": true,                // Allow default imports from CJS
+    "skipLibCheck": true,                   // Speeds up builds
+    "forceConsistentCasingInFileNames": true,
+    "strict": true                          // Enable all strict type checks
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules", "example", "**/*.test.ts", "**/*.test.tsx"]
+}

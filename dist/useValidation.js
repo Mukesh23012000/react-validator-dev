@@ -1,133 +1,118 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const react_1 = require("react");
-const isRequiredCheck = (data, errorMessage) => !data ? errorMessage : "";
-const maxLengthCheck = (data, max, errorMessage) => data.length > max ? errorMessage : "";
-const minLengthCheck = (data, min, errorMessage) => data.length < min ? errorMessage : "";
-const excludedCharactersCheck = (data, chars, errorMessage) => (chars.some((char) => data.includes(char)) ? errorMessage : "");
-const regexCheck = (data, regex, errorMessage) => new RegExp(regex).test(data) ? "" : errorMessage;
-const alphaCheck = (data, errorMessage) => /^[A-Za-z]+$/.test(data) ? "" : errorMessage;
-const emailCheck = (data, errorMessage) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(data) ? "" : errorMessage;
-};
-const alphaWithDashCheck = (data, errorMessage) => {
-    const regex = /^[A-Za-z]+(-[A-Za-z]+)*$/;
-    return regex.test(data) ? "" : errorMessage;
-};
-const numericCheck = (data, errorMessage) => /^\d+$/.test(data) ? "" : errorMessage;
-const isDateCheck = (data, errorMessage) => {
-    const regex = /^\d{4}-\d{2}-\d{2}$/; // Example format YYYY-MM-DD
-    const date = new Date(data);
-    return regex.test(data) && !isNaN(date.getTime()) ? "" : errorMessage;
-};
-const alphaWithSpaceCheck = (data, errorMessage) => {
-    const regex = /^[A-Za-z]+( [A-Za-z]+)*$/;
-    return regex.test(data) ? "" : errorMessage;
-};
-const sameAsFieldCheck = (data, errorMessage, fieldValue) => (data === fieldValue ? "" : errorMessage);
-const useValidation = (data, isMultiple = false, submit = true, debounceDelay = 300, validateAll = false) => {
-    const [errors, setErrors] = (0, react_1.useState)({
+import { useState, useEffect } from "react";
+import { mandatoryProps, optionalProps } from "./exceptionHandler";
+import { validators } from "./validators";
+const useValidation = (props) => {
+    //Exception handling for props
+    const { fields, validation } = mandatoryProps(props);
+    const { isMultiple, debounceDelay, customValidators } = optionalProps(props);
+    const [returnAPIs, setReturnAPIs] = useState({
         errors: {},
-        status: true,
+        isValid: false,
+        touchedFields: {},
     });
-    const { fields, validation } = data;
-    const [fieldsInitailStaus, setFieldsInitailStaus] = (0, react_1.useState)();
-    const [submitted, setsubmitted] = (0, react_1.useState)(true);
-    (0, react_1.useEffect)(() => {
-        let status = Object.assign({}, fields);
-        Object.keys(fields).forEach((field) => (status[field] = false));
-        setFieldsInitailStaus(status);
-        setsubmitted(submit);
-    }, []);
-    const validateC = () => {
+    const markTouched = (field) => {
+        setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: Object.assign(Object.assign({}, prev.touchedFields), { [field]: true }) })));
+    };
+    const validate = () => {
         const newErrors = {};
         Object.keys(fields).forEach((field) => {
             var _a;
-            const multipleMessages = [];
             const value = fields[field];
-            let error = "";
             const rules = validation.rules[field];
-            const messages = (_a = validation === null || validation === void 0 ? void 0 : validation.messages) === null || _a === void 0 ? void 0 : _a[field];
-            let isRequired = false;
-            if (rules === null || rules === void 0 ? void 0 : rules.isRequired) {
-                error = isRequiredCheck(value, (messages === null || messages === void 0 ? void 0 : messages.isRequired) || `Please enter the ${field}`);
-                if (error === null || error === void 0 ? void 0 : error.length) {
-                    isRequired = true;
+            if (!rules)
+                return;
+            const messages = ((_a = validation.messages) === null || _a === void 0 ? void 0 : _a[field]) || {};
+            const multipleMessages = [];
+            let hasError = false;
+            // isRequired check
+            if (rules.isRequired) {
+                const error = validators.isRequired(value, messages.isRequired || `Please enter the ${field}`);
+                if (error) {
                     multipleMessages.push(error);
+                    hasError = true;
+                    if (!isMultiple) {
+                        newErrors[field] = error;
+                        return;
+                    }
                 }
             }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.maxLength) !== undefined && !isRequired) {
-                error = maxLengthCheck(value, rules.maxLength, (messages === null || messages === void 0 ? void 0 : messages.maxLength) ||
-                    `The ${field} length should be at most ${rules.maxLength}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
+            // Custom validator check 
+            if (rules.custom && (customValidators === null || customValidators === void 0 ? void 0 : customValidators[field])) {
+                const error = customValidators[field](value, fields);
+                if (error) {
+                    if (!isMultiple) {
+                        newErrors[field] = error;
+                        return;
+                    }
+                    else {
+                        multipleMessages.push(error);
+                    }
+                }
             }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.minLength) !== undefined && !isRequired) {
-                error = minLengthCheck(value, rules.minLength, (messages === null || messages === void 0 ? void 0 : messages.minLength) ||
-                    `The ${field} length should be at least ${rules.minLength}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
+            // Additional checks if not failed by isRequired
+            if (!hasError || isMultiple) {
+                const checks = Object.entries(rules).filter(([key]) => key !== "isRequired");
+                for (const [rule, ruleValue] of checks) {
+                    let error = "";
+                    switch (rule) {
+                        case "maxLength":
+                            error = validators.maxLength(value, ruleValue, messages.maxLength || `The ${field} length should be at most ${ruleValue}`);
+                            break;
+                        case "minLength":
+                            error = validators.minLength(value, ruleValue, messages.minLength || `The ${field} length should be at least ${ruleValue}`);
+                            break;
+                        case "excludedCharacters":
+                            error = validators.excludedCharacters(value, ruleValue, messages.excludedCharacters || `Please enter valid ${field}`);
+                            break;
+                        case "regex":
+                            error = validators.regex(value, ruleValue, messages.regex || `The ${field} format is invalid`);
+                            break;
+                        case "alpha":
+                            error = validators.alpha(value, messages.alpha || `Please enter valid ${field}`);
+                            break;
+                        case "alphaDash":
+                            error = validators.alphaDash(value, messages.alphaDash || `Please enter valid ${field}`);
+                            break;
+                        case "alphaSpace":
+                            error = validators.alphaSpace(value, messages.alphaSpace || `Please enter valid ${field}`);
+                            break;
+                        case "numeric":
+                            error = validators.numeric(value, messages.numeric || `Please enter valid ${field}`);
+                            break;
+                        case "email":
+                            error = validators.email(value, messages.email || `Please enter a valid ${field}`);
+                            break;
+                        case "date":
+                            error = validators.date(value, messages.date || `Please enter a valid ${field}`);
+                            break;
+                        case "sameAsField":
+                            const otherFieldValue = fields[ruleValue];
+                            error = validators.sameAsField(value, otherFieldValue, messages.sameAsField || `Please ensure ${field} matches ${ruleValue}`);
+                            break;
+                    }
+                    if (error) {
+                        if (!isMultiple) {
+                            newErrors[field] = error;
+                            return;
+                        }
+                        else {
+                            multipleMessages.push(error);
+                        }
+                    }
+                }
             }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.excludedCharacters) && !isRequired) {
-                error = excludedCharactersCheck(value, rules.excludedCharacters, (messages === null || messages === void 0 ? void 0 : messages.excludedCharacters) || `Please enter valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.regex) && !isRequired) {
-                error = regexCheck(value, rules.regex, (messages === null || messages === void 0 ? void 0 : messages.regex) || `The ${field} format is invalid`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.alpha) && !isRequired) {
-                error = alphaCheck(value, (messages === null || messages === void 0 ? void 0 : messages.alpha) || `Please enter valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.email) && !isRequired) {
-                error = emailCheck(value, (messages === null || messages === void 0 ? void 0 : messages.email) || `Please enter a valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.numeric) && !isRequired) {
-                error = numericCheck(value, (messages === null || messages === void 0 ? void 0 : messages.numeric) || `Please enter a valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.date) && !isRequired) {
-                error = isDateCheck(value, (messages === null || messages === void 0 ? void 0 : messages.date) || `Please enter a valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.alphaDash) && !isRequired) {
-                error = alphaWithDashCheck(value, (messages === null || messages === void 0 ? void 0 : messages.alphaDash) || `Please enter valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.alphaSpace) && !isRequired) {
-                error = alphaWithSpaceCheck(value, (messages === null || messages === void 0 ? void 0 : messages.alphaSpace) || `Please enter valid ${field}`);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if ((!error || isMultiple) && (rules === null || rules === void 0 ? void 0 : rules.sameAsField) && !isRequired) {
-                const otherFieldValue = fields[rules.sameAsField];
-                error = sameAsFieldCheck(value, (messages === null || messages === void 0 ? void 0 : messages.sameAsField) ||
-                    `Please ensure ${field} matches ${rules.sameAsField}`, otherFieldValue);
-                (error === null || error === void 0 ? void 0 : error.length) && multipleMessages.push(error);
-            }
-            if (!error.length) {
-                setFieldsInitailStaus(Object.assign(Object.assign({}, fieldsInitailStaus), { [field]: true }));
-            }
-            if ((fieldsInitailStaus === null || fieldsInitailStaus === void 0 ? void 0 : fieldsInitailStaus[field]) == true || submitted == true) {
-                newErrors[field] = !isMultiple ? error : multipleMessages;
-            }
+            newErrors[field] = isMultiple ? multipleMessages : "";
         });
-        if (JSON.stringify(errors.errors) !== JSON.stringify(newErrors)) {
-            const status = Object.values(newErrors).some((error) => error.length);
-            setErrors({ errors: newErrors, status });
+        if (JSON.stringify(returnAPIs.errors) !== JSON.stringify(newErrors)) {
+            const hasErrors = Object.values(newErrors).some((e) => Array.isArray(e) ? e.length > 0 : !!e);
+            setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { errors: newErrors, isValid: !hasErrors })));
         }
     };
-    (0, react_1.useEffect)(() => {
-        const handler = setTimeout(() => {
-            validateC();
-        }, debounceDelay);
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [fields, validation, debounceDelay, submitted]);
-    (0, react_1.useEffect)(() => {
-        validateAll && setsubmitted(true);
-    }, [validateAll]);
-    return [errors];
+    useEffect(() => {
+        const handler = setTimeout(() => validate(), debounceDelay);
+        return () => clearTimeout(handler);
+    }, [fields, validation, debounceDelay]);
+    return Object.assign(Object.assign({}, returnAPIs), { markTouched });
 };
-exports.default = useValidation;
+export default useValidation;
+//# sourceMappingURL=useValidation.js.map
