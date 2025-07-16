@@ -2,7 +2,11 @@
 
 > A flexible and customizable real-time form validation library for React.
 
-![npm](https://img.shields.io/npm/v/react-validator-dev) ![license](https://img.shields.io/npm/l/react-validator-dev)
+![npm](https://img.shields.io/npm/v/react-validator-dev)
+![npm](https://img.shields.io/npm/dm/react-validator-dev)
+![license](https://img.shields.io/npm/l/react-validator-dev)
+![issues](https://img.shields.io/github/issues/Mukesh23012000/react-validator-dev)
+![stars](https://img.shields.io/github/stars/Mukesh23012000/react-validator-dev?style=social)
 
 ---
 
@@ -24,8 +28,9 @@ npm install react-validator-dev
 - **Field Dependencies:**  Supports sameAsField for confirm password, etc.
 - **Debounced Checks:** Prevents excessive validations while typing.
 - **Multiple Errors Support:** Return multiple errors per field (`isMultiple: true`).
+- **Memoized Validations:** Uses memoization internally to cache validation results for better performance.
 
-## ⚙️ Parameters
+## Parameters
 
 The `useValidation` hook accepts a single props object with the following properties:
 
@@ -53,7 +58,7 @@ The `useValidation` hook accepts a single props object with the following proper
 
 ```jsx
 import React, { useState } from 'react';
-import useValidation from 'react-validator-dev';
+import {useValidation} from 'react-validator-dev';
 
 const validation = {
   rules: {
@@ -252,5 +257,3 @@ Start improving user experience in your forms by implementing real-time validati
 ---
 
 Feel free to customize or extend the validation rules and messages to perfectly fit your application needs.
-
-If you want, I can help you generate example snippets or usage guides for the **custom** validator as well!
