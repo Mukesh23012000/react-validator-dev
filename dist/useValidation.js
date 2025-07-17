@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { mandatoryProps, optionalProps } from "./exceptionHandler";
 import { validators } from "./validators";
 const useValidation = (props) => {
@@ -13,15 +13,22 @@ const useValidation = (props) => {
     const markTouched = (field) => {
         setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: Object.assign(Object.assign({}, prev.touchedFields), { [field]: true }) })));
     };
+    const allTouchedFields = useMemo(() => {
+        return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
+    }, [fields]);
+    const markAllTouched = () => {
+        setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: allTouchedFields })));
+    };
+    const mRules = useMemo(() => validation.rules, [validation]);
+    const mMessages = useMemo(() => validation.messages || {}, [validation]);
     const validate = () => {
         const newErrors = {};
         Object.keys(fields).forEach((field) => {
-            var _a;
             const value = fields[field];
-            const rules = validation.rules[field];
+            const rules = mRules[field];
             if (!rules)
                 return;
-            const messages = ((_a = validation.messages) === null || _a === void 0 ? void 0 : _a[field]) || {};
+            const messages = mMessages[field] || {};
             const multipleMessages = [];
             let hasError = false;
             // isRequired check
@@ -89,6 +96,8 @@ const useValidation = (props) => {
                             const otherFieldValue = fields[ruleValue];
                             error = validators.sameAsField(value, otherFieldValue, messages.sameAsField || `Please ensure ${field} matches ${ruleValue}`);
                             break;
+                        default:
+                            console.warn(`Unknown validation rule "${rule}" for field "${field}"`);
                     }
                     if (error) {
                         if (!isMultiple) {
@@ -112,7 +121,7 @@ const useValidation = (props) => {
         const handler = setTimeout(() => validate(), debounceDelay);
         return () => clearTimeout(handler);
     }, [fields, validation, debounceDelay]);
-    return Object.assign(Object.assign({}, returnAPIs), { markTouched });
+    return Object.assign(Object.assign({}, returnAPIs), { markTouched, markAllTouched });
 };
 export default useValidation;
 //# sourceMappingURL=useValidation.js.map

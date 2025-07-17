@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ValidateProps, ReturnAPIs } from "./types";
 import { mandatoryProps, optionalProps } from "./exceptionHandler";
 import { validators } from "./validators";
@@ -25,14 +25,28 @@ const useValidation = (props:ValidateProps) => {
     }));
   };
 
+  const allTouchedFields = useMemo(() => {
+    return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
+  }, [fields]);
+
+  const markAllTouched = (): void => {
+    setReturnAPIs((prev) => ({
+      ...prev,
+      touchedFields: allTouchedFields,
+    }));
+  };
+
+  const mRules = useMemo(() => validation.rules, [validation]);
+  const mMessages = useMemo(() => validation.messages || {}, [validation]);
+
   const validate = ():void => {
     const newErrors:Record<string, string> | any = {};
 
     Object.keys(fields).forEach((field) => {
       const value = fields[field];
-      const rules = validation.rules[field];
+      const rules = mRules[field];
       if (!rules) return;
-      const messages = validation.messages?.[field] || {};
+      const messages = mMessages[field] || {};
       const multipleMessages: string[] = [];
       let hasError = false;
 
@@ -103,6 +117,8 @@ const useValidation = (props:ValidateProps) => {
               const otherFieldValue = fields[ruleValue];
               error = validators.sameAsField(value, otherFieldValue, messages.sameAsField || `Please ensure ${field} matches ${ruleValue}`);
               break;
+            default:
+              console.warn(`Unknown validation rule "${rule}" for field "${field}"`);
           }
 
           if(error){
@@ -128,7 +144,7 @@ const useValidation = (props:ValidateProps) => {
     return () => clearTimeout(handler);
   }, [fields, validation, debounceDelay]);
 
-  return {...returnAPIs,markTouched};
+  return {...returnAPIs,markTouched, markAllTouched};
 };
 
 export default useValidation;
