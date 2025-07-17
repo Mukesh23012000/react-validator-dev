@@ -17,7 +17,7 @@ const useValidation = (props) => {
         setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: Object.assign(Object.assign({}, prev.touchedFields), { [field]: false }) })));
     };
     const allUntouchedFields = useMemo(() => {
-        return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
+        return Object.fromEntries(Object.keys(fields).map((key) => [key, false]));
     }, [fields]);
     const allTouchedFields = useMemo(() => {
         return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));

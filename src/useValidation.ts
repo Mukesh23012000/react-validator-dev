@@ -36,7 +36,7 @@ const useValidation = (props:ValidateProps) => {
   };
 
   const allUntouchedFields = useMemo(() => {
-    return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
+    return Object.fromEntries(Object.keys(fields).map((key) => [key, false]));
   }, [fields]);
 
   const allTouchedFields = useMemo(() => {
