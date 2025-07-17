@@ -25,6 +25,20 @@ const useValidation = (props:ValidateProps) => {
     }));
   };
 
+  const markUnTouched = (field: string): void => {
+    setReturnAPIs((prev) => ({
+      ...prev,
+      touchedFields: {
+        ...prev.touchedFields,
+        [field]: false,
+      },
+    }));
+  };
+
+  const allUntouchedFields = useMemo(() => {
+    return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
+  }, [fields]);
+
   const allTouchedFields = useMemo(() => {
     return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
   }, [fields]);
@@ -33,6 +47,13 @@ const useValidation = (props:ValidateProps) => {
     setReturnAPIs((prev) => ({
       ...prev,
       touchedFields: allTouchedFields,
+    }));
+  };
+
+  const markAllUntouched = (): void => {
+    setReturnAPIs((prev) => ({
+      ...prev,
+      touchedFields: allUntouchedFields,
     }));
   };
 
@@ -144,7 +165,7 @@ const useValidation = (props:ValidateProps) => {
     return () => clearTimeout(handler);
   }, [fields, validation, debounceDelay]);
 
-  return {...returnAPIs,markTouched, markAllTouched};
+  return {...returnAPIs,markTouched, markAllTouched , markUnTouched, markAllUntouched};
 };
 
 export default useValidation;

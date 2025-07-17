@@ -146,6 +146,8 @@ The `useValidation` hook returns an object containing the following properties:
 | `touchedFields`| `Record<string, boolean>`| Tracks which fields have been interacted with (marked as "touched"). Useful for controlling error display.  |
 | `markTouched`  | `(field: string) => void`| A function to mark a specific field as touched. Should be called on field interaction (e.g., `onBlur`).         |
 | `markAllTouched`  | `() => void`| A function to mark a all the fields as touched.         |
+| `markUnTouched`  | `(field: string) => void`| A function to mark a specific field as untouched.         |
+| `markAllUntouched`  | `() => void`| A function to mark a all the fields as touched.         |
 
 ---
 

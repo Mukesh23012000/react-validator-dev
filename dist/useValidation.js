@@ -13,11 +13,20 @@ const useValidation = (props) => {
     const markTouched = (field) => {
         setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: Object.assign(Object.assign({}, prev.touchedFields), { [field]: true }) })));
     };
+    const markUnTouched = (field) => {
+        setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: Object.assign(Object.assign({}, prev.touchedFields), { [field]: false }) })));
+    };
+    const allUntouchedFields = useMemo(() => {
+        return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
+    }, [fields]);
     const allTouchedFields = useMemo(() => {
         return Object.fromEntries(Object.keys(fields).map((key) => [key, true]));
     }, [fields]);
     const markAllTouched = () => {
         setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: allTouchedFields })));
+    };
+    const markAllUntouched = () => {
+        setReturnAPIs((prev) => (Object.assign(Object.assign({}, prev), { touchedFields: allUntouchedFields })));
     };
     const mRules = useMemo(() => validation.rules, [validation]);
     const mMessages = useMemo(() => validation.messages || {}, [validation]);
@@ -121,7 +130,7 @@ const useValidation = (props) => {
         const handler = setTimeout(() => validate(), debounceDelay);
         return () => clearTimeout(handler);
     }, [fields, validation, debounceDelay]);
-    return Object.assign(Object.assign({}, returnAPIs), { markTouched, markAllTouched });
+    return Object.assign(Object.assign({}, returnAPIs), { markTouched, markAllTouched, markUnTouched, markAllUntouched });
 };
 export default useValidation;
 //# sourceMappingURL=useValidation.js.map
