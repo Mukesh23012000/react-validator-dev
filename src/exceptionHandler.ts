@@ -18,7 +18,7 @@ export function mandatoryProps(props: ValidateProps): Pick<ValidateProps, 'field
 export function optionalProps(props: ValidateProps):  Pick<ValidateProps, 'isMultiple' | 'debounceDelay' | 'customValidators' >  {
     const opProps: Pick<ValidateProps, "isMultiple" | "debounceDelay" | "customValidators"> = {
         isMultiple: false,
-        debounceDelay: 300,
+        debounceDelay: 0,
         customValidators: undefined,
     };
   

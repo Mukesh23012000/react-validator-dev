@@ -48,11 +48,11 @@ const useValidation = (props) => {
                     hasError = true;
                     if (!isMultiple) {
                         newErrors[field] = error;
-                        return;
                     }
+                    return;
                 }
             }
-            // Custom validator check 
+            // Custom validator check debounceDelay
             if (rules.custom && (customValidators === null || customValidators === void 0 ? void 0 : customValidators[field])) {
                 const error = customValidators[field](value, fields);
                 if (error) {

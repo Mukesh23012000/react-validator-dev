@@ -79,12 +79,12 @@ const useValidation = (props:ValidateProps) => {
           hasError = true;
           if(!isMultiple){
             newErrors[field] = error;
-            return;
           }
+          return;
         }
       }
 
-      // Custom validator check 
+      // Custom validator check debounceDelay
       if (rules.custom && customValidators?.[field]) {
         const error = customValidators[field](value, fields);
         if (error) {

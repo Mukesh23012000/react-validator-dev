@@ -13,7 +13,7 @@ export function mandatoryProps(props) {
 export function optionalProps(props) {
     const opProps = {
         isMultiple: false,
-        debounceDelay: 300,
+        debounceDelay: 0,
         customValidators: undefined,
     };
     if (Object.prototype.hasOwnProperty.call(props, 'isMultiple')) {
