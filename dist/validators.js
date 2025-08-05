@@ -1,8 +1,8 @@
 import memoize from "./memomize";
 export const validators = {
     isRequired: memoize((data, msg) => (!data ? msg : "")),
-    maxLength: memoize((data, max, msg) => (data.length > max ? msg : "")),
-    minLength: memoize((data, min, msg) => (data.length < min ? msg : "")),
+    maxLength: memoize((data, max, msg) => ((data === null || data === void 0 ? void 0 : data.length) > max ? msg : "")),
+    minLength: memoize((data, min, msg) => ((data === null || data === void 0 ? void 0 : data.length) < min ? msg : "")),
     excludedCharacters: memoize((data, chars, msg) => chars.some((char) => data.includes(char)) ? msg : ""),
     regex: memoize((data, regex, msg) => (!new RegExp(regex).test(data) ? msg : "")),
     alpha: memoize((data, msg) => (!/^[A-Za-z]+$/.test(data) ? msg : "")),
