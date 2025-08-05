@@ -40,16 +40,18 @@ const useValidation = (props) => {
             const messages = mMessages[field] || {};
             const multipleMessages = [];
             let hasError = false;
+            let isRequiredError = false;
             // isRequired check
             if (rules.isRequired) {
                 const error = validators.isRequired(value, messages.isRequired || `Please enter the ${field}`);
                 if (error) {
                     multipleMessages.push(error);
+                    isRequiredError = true;
                     hasError = true;
                     if (!isMultiple) {
                         newErrors[field] = error;
+                        return;
                     }
-                    return;
                 }
             }
             // Custom validator check debounceDelay
@@ -66,7 +68,7 @@ const useValidation = (props) => {
                 }
             }
             // Additional checks if not failed by isRequired
-            if (!hasError || isMultiple) {
+            if (!hasError || (isMultiple && !isRequiredError)) {
                 const checks = Object.entries(rules).filter(([key]) => key !== "isRequired");
                 for (const [rule, ruleValue] of checks) {
                     let error = "";
