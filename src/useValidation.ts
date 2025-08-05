@@ -70,17 +70,19 @@ const useValidation = (props:ValidateProps) => {
       const messages = mMessages[field] || {};
       const multipleMessages: string[] = [];
       let hasError = false;
+      let isRequiredError = false;
 
       // isRequired check
       if(rules.isRequired){
         const error = validators.isRequired(value, messages.isRequired || `Please enter the ${field}`);
         if(error){
           multipleMessages.push(error);
+          isRequiredError = true;
           hasError = true;
           if(!isMultiple){
             newErrors[field] = error;
+            return;
           }
-          return;
         }
       }
 
@@ -98,7 +100,7 @@ const useValidation = (props:ValidateProps) => {
       }
 
       // Additional checks if not failed by isRequired
-      if(!hasError || isMultiple){
+      if(!hasError || (isMultiple && !isRequiredError)){
         const checks: [string, any][] = Object.entries(rules).filter(([key]) => key !== "isRequired");
 
         for (const [rule, ruleValue] of checks) {
