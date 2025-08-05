@@ -4,7 +4,7 @@ declare const useValidation: (props: ValidateProps) => {
     markAllTouched: () => void;
     markUnTouched: (field: string) => void;
     markAllUntouched: () => void;
-    errors: Record<string, string>;
+    errors: Record<string, string | string[]>;
     isValid: boolean;
     touchedFields: Record<string, boolean>;
 };

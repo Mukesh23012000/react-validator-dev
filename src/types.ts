@@ -35,7 +35,7 @@ export interface Validation {
 }
 
 export interface ReturnAPIs {
-    errors: Record<string, string>;
+    errors: Record<string, string | string[]>;
     isValid: boolean;
     touchedFields: Record<string, boolean>;
 }
